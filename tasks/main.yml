@@ -1,26 +1,34 @@
 ---
-    - name: setup tor apt repo
-      apt_repository: repo='deb http://deb.torproject.org/torproject.org wheezy main' state=present
+- name: setup tor apt repo
+  apt_repository: repo='deb http://deb.torproject.org/torproject.org wheezy main' state=present
 
-    - name: copy tor-signing-key.pub to host
-      copy: src=tor-signing-key.pub dest=/etc/tor-signing-key.pub owner=root group=root mode=0700
+- name: copy tor-signing-key.pub to host
+  copy: src=tor-signing-key.pub dest=/etc/tor-signing-key.pub owner=root group=root mode=0700
 
-    - name: install tor project apt signing gpg key
-      apt_key: id=0x886DDD89 state=present file=/etc/tor-signing-key.pub
+- name: install tor project apt signing gpg key
+  apt_key: id=0x886DDD89 state=present file=/etc/tor-signing-key.pub
 
-    - name: install tor and tor keyring packages
-      apt:
-        pkg: "{{item}}"
-        state: present
-        update_cache: yes
-      with_items: ["deb.torproject.org-keyring", "tor"]
+- name: install tor and tor keyring packages
+  apt:
+    pkg: "{{item}}"
+    state: present
+    update_cache: yes
+  with_items: ["deb.torproject.org-keyring", "tor"]
 
+- name: create tor hidden services parent directory
+  file: path={{ tor_hidden_services_parent_dir }} state=directory
 
-    - name: template torrc
-      template: src="{{ tor_torrc }}" dest=/etc/tor/torrc
-            owner=root group=root mode=0644
-      notify:
-        - restart tor
+- name: create tor hidden services directories
+  file: path={{ tor_hidden_services_parent_dir }}/{{ item.dir }}
+   state=directory owner=debian-tor
+  with_items: tor_hidden_services
 
-    - name: make sure tor is running
-      service: name=tor state=running
+- name: template torrc
+  template: src=torrc dest=/etc/tor/torrc
+    owner=root group=root mode=0644
+  notify:
+  - restart tor
+
+- name: make sure tor is running
+  service: name=tor state=running
+

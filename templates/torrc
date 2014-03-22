@@ -1,0 +1,9 @@
+
+ExitPolicy {{ tor_ExitPolicy }}
+
+{% for service in tor_hidden_services %}
+HiddenServiceDir {{ tor_hidden_services_parent_dir }}/{{ service.dir }}
+{% for port in service.ports %}
+HiddenServicePort {{ port }} 127.0.0.1:{{ port }}
+{% endfor %}
+{% endfor %}
