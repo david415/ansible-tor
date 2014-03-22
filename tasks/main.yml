@@ -17,7 +17,7 @@
 
 
     - name: template torrc
-      template: src="{{ torrc }}" dest=/etc/tor/torrc
+      template: src="{{ tor_torrc }}" dest=/etc/tor/torrc
             owner=root group=root mode=0644
       notify:
         - restart tor
