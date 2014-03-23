@@ -1,2 +1,2 @@
 ---
-# defaults file for .
+tor_hidden_services_parent_dir: /var/lib/tor/services
