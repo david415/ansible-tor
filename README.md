@@ -2,13 +2,6 @@ Ansible Tor
 ===========
 
 This is an Ansible role for use with Tor - https://www.torproject.org/
-It can be used by relay or bridge operators... and of course this Tor
-role can also configure Tor hidden services.
-
-This is a rough draft work in progress.
-I need to fix the way the torrc is templatized so that I make
-all of tor's configuration options available.
-
 
 Requirements
 ------------
@@ -42,7 +35,9 @@ Currently, the torrc template looks like this:
 {% endif %}
 {% endfor %}
 
+{% if tor_ExitPolicy is defined %}
 ExitPolicy {{ tor_ExitPolicy }}
+{% endif %}
 
 {% for service in tor_hidden_services %}
 HiddenServiceDir {{ tor_hidden_services_parent_dir }}/{{ service.dir }}
@@ -57,23 +52,20 @@ HiddenServicePort {{ hidden_port.virtport }} {{ hidden_port.target }}
 see example playbook below... >_<
 
 
-Dependencies
-------------
-
-I wrote this to work on debian.
-If someone wants to submit a patch to make it
-compatible with other linux distros that is fine!
-
-
-Example Tor relay Playbook
+Example Tor Relay Playbook
 --------------------------
+
+This play waits for the tor hidden services hostname files to exist
+when this role variable is set:
+
+```yml
+tor_wait_for_hidden_services: yes
+```
 
 Here we setup a Tor relay with a Hidden Service directed to our ssh port...
 Read about tor hidden services here:
 https://www.torproject.org/docs/tor-hidden-service.html.en
 
-This play waits for the tor hidden services hostname files to exist with:
-tor_wait_for_hidden_services: yes
 
 ```yml
 ---
@@ -117,8 +109,8 @@ License
 MIT
 
 
-Feature requests and bug-reports welcome
-----------------------------------------
+Feature requests and bug-reports welcome!
+-----------------------------------------
 
 https://github.com/david415/ansible-tor/issues
 
