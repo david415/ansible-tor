@@ -1,0 +1,17 @@
+---
+
+- name: setup tor apt repo
+  apt_repository: repo='deb http://deb.torproject.org/torproject.org wheezy main' state=present
+
+- name: copy tor-signing-key.pub to host
+  copy: src=tor-signing-key.pub dest=/etc/tor-signing-key.pub owner=root group=root mode=0700
+
+- name: install tor project apt signing gpg key
+  apt_key: id=0x886DDD89 state=present file=/etc/tor-signing-key.pub
+
+- name: install tor and tor keyring packages
+  apt:
+    pkg: "{{item}}"
+    state: present
+    update_cache: yes
+  with_items: ["deb.torproject.org-keyring", "tor"]
