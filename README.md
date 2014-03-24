@@ -13,11 +13,46 @@ all of tor's configuration options available.
 Requirements
 ------------
 
-written to work on debian wheezy...
+written and tested on debian wheezy
 
 
-Role Variables
---------------
+Tor configuration - torrc
+-------------------------
+
+Suggestions for a better templating scheme welcome.
+For the time being it works fairly well to have
+torrc options be set from host_vars/group_vars and
+also set from role variables.
+
+Example using host_vars; variable names must begin with "tor_" :
+
+```yml
+tor_Nickname: [ "OnionRobot" ]
+```
+
+Currently, the torrc template looks like this:
+
+```yml
+
+{% for configkey, value in hostvars[inventory_hostname].iteritems() %}
+{% if configkey|truncate(3, True) == "tor..." %}
+{% for element in hostvars[inventory_hostname][configkey] %}
+{{ configkey|replace("tor_", "") }} {{ element }}
+{% endfor %}
+{% endif %}
+{% endfor %}
+
+ExitPolicy {{ tor_ExitPolicy }}
+
+{% for service in tor_hidden_services %}
+HiddenServiceDir {{ tor_hidden_services_parent_dir }}/{{ service.dir }}
+{% for hidden_port in service.ports %}
+HiddenServicePort {{ hidden_port.virtport }} {{ hidden_port.target }}
+{% endfor %}
+{% endfor %}
+
+```
+
 
 see example playbook below... >_<
 
@@ -37,6 +72,8 @@ Here we setup a Tor relay with a Hidden Service directed to our ssh port...
 Read about tor hidden services here:
 https://www.torproject.org/docs/tor-hidden-service.html.en
 
+This play waits for the tor hidden services hostname files to exist with:
+tor_wait_for_hidden_services: yes
 
 ```yml
 ---
@@ -54,7 +91,7 @@ https://www.torproject.org/docs/tor-hidden-service.html.en
     ]
   roles:
     - { role: ansible-role-firewall,
-        firewall_allowed_tcp_ports: [ 22, "{{ hidden_ssh_virtport }}" ],
+        firewall_allowed_tcp_ports: [ 22 ],
         sudo: yes
       }
     - { role: ansible-wheezy-common,
@@ -67,6 +104,7 @@ https://www.torproject.org/docs/tor-hidden-service.html.en
         tor_ExitPolicy: "reject *:*",
         tor_hidden_services: "{{ relay_hidden_services }}",
         tor_hidden_services_parent_dir: "{{ relay_hidden_services_parent_dir }}",
+        tor_wait_for_hidden_services: yes,
         sudo: yes
       }
 ```

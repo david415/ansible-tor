@@ -1,53 +1,14 @@
 ---
-- name: setup tor apt repo
-  apt_repository: repo='deb http://deb.torproject.org/torproject.org wheezy main' state=present
 
-- name: copy tor-signing-key.pub to host
-  copy: src=tor-signing-key.pub dest=/etc/tor-signing-key.pub owner=root group=root mode=0700
+- include: install.yml
 
-- name: install tor project apt signing gpg key
-  apt_key: id=0x886DDD89 state=present file=/etc/tor-signing-key.pub
+- include: hidden_services.yml
+  when: tor_hidden_services is defined
 
-- name: install tor and tor keyring packages
-  apt:
-    pkg: "{{item}}"
-    state: present
-    update_cache: yes
-  with_items: ["deb.torproject.org-keyring", "tor"]
+- include: configure.yml
 
-- name: create tor hidden services parent directory
-  file: path={{ tor_hidden_services_parent_dir }} state=directory
+- include: wait_for_hidden_services.yml
+  when: tor_wait_for_hidden_services is defined
 
-- name: create tor hidden services directories
-  file: path={{ tor_hidden_services_parent_dir }}/{{ item.dir }}
-   state=directory owner=debian-tor
-  with_items: tor_hidden_services
-
-- name: template torrc
-  template: src=torrc dest=/etc/tor/torrc
-    owner=root group=root mode=0644
-  notify:
-  - restart tor
-
-- name: make sure tor is running
-  service: name=tor state=running
-
-- name: set_fact tor hidden services
-  set_fact: tor_hidden_services_fact="{{ tor_hidden_services }}"
-
-- name: set_fact tor hidden services parent dir
-  set_fact: tor_hidden_services_parent_dir_fact="{{ tor_hidden_services_parent_dir }}"
-
-# we can wait for tor hidden services to be started like this
-#- name: wait for all hidden services hostname file
-#  wait_for: state=present path="{{ tor_hidden_services_parent_dir }}/{{ item.dir }}/hostname" delay=5
-#  with_items: tor_hidden_services
-
-# or from another playbook we can wait like this using facts
-#- name: wait for all hidden services hostname files
-#  wait_for:
-#    state: present
-#    path: "{{ hostvars[inventory_hostname]['tor_hidden_services_parent_dir_fact'] }}/{{ item['dir'] }}/hostname"
-#  with_items: "{{ hostvars[inventory_hostname]['tor_hidden_services_fact'] }}"
-#  sudo: yes
-
+- include: set_hidden_services_facts.yml
+  when: tor_hidden_services is defined

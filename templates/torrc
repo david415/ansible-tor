@@ -1,5 +1,15 @@
 
+{% for configkey, value in hostvars[inventory_hostname].iteritems() %}
+{% if configkey|truncate(3, True) == "tor..." %}
+{% for element in hostvars[inventory_hostname][configkey] %}
+{{ configkey|replace("tor_", "") }} {{ element }}
+{% endfor %}
+{% endif %}
+{% endfor %}
+
+{% if tor_ExitPolicy is defined %}
 ExitPolicy {{ tor_ExitPolicy }}
+{% endif %}
 
 {% for service in tor_hidden_services %}
 HiddenServiceDir {{ tor_hidden_services_parent_dir }}/{{ service.dir }}
