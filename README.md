@@ -83,7 +83,7 @@ https://www.torproject.org/docs/tor-hidden-service.html.en
     ]
   roles:
     - { role: ansible-role-firewall,
-        firewall_allowed_tcp_ports: [ 22 ],
+        firewall_allowed_tcp_ports: [ 22, 9001 ],
         sudo: yes
       }
     - { role: ansible-wheezy-common,
