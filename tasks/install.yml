@@ -1,17 +1,24 @@
 ---
 
-- name: setup tor apt repo
-  apt_repository: repo='deb http://deb.torproject.org/torproject.org wheezy main' state=present
-
-- name: copy tor-signing-key.pub to host
-  copy: src=tor-signing-key.pub dest=/etc/tor-signing-key.pub owner=root group=root mode=0700
+- name: install requirements for ansible apt module
+  apt: pkg="{{ item }}" state=latest
+  with_items:
+    - python-apt
+    - python-pycurl
 
 - name: install tor project apt signing gpg key
-  apt_key: id=0x886DDD89 state=present file=/etc/tor-signing-key.pub
+  apt_key: id=0x886DDD89
+    state=present
+    data="{{ lookup('file', 'tor-signing-key.pub') }}"
+
+- name: setup tor apt repo
+  apt_repository: >
+    repo='deb http://deb.torproject.org/torproject.org {{ ansible_distribution_release }} main'
+    state=present 
+    update_cache=yes
 
 - name: install tor and tor keyring packages
   apt:
-    pkg: "{{item}}"
-    state: present
-    update_cache: yes
+    pkg: "{{ item }}"
+    state: latest
   with_items: ["deb.torproject.org-keyring", "tor"]
