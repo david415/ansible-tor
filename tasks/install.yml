@@ -1,7 +1,10 @@
 ---
 
-- name: install python requirements
-  apt: pkg="python-pycurl" state=latest
+- name: install requirements for ansible apt module
+  apt: pkg="{{ item }}" state=latest
+  with_items:
+    - python-apt
+    - python-pycurl
 
 - name: install tor project apt signing gpg key
   apt_key: id=0x886DDD89
