@@ -12,3 +12,7 @@
 
 - include: set_hidden_services_facts.yml
   when: tor_hidden_services is defined
+
+- include: install_obfsproxy.yml
+  when: tor_obfsproxy_home is defined
+

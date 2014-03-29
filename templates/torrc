@@ -11,6 +11,22 @@
 ExitPolicy {{ tor_ExitPolicy }}
 {% endif %}
 
+{% if tor_UseBridges is defined %}
+UseBridges {{ tor_UseBridges }}
+{% endif %}
+
+{% if tor_BridgeRelay is defined %}
+BridgeRelay {{ tor_BridgeRelay }}
+{% endif %}
+
+{% if tor_PublishServerDescriptor is defined %}
+PublishServerDescriptor {{ tor_PublishServerDescriptor }}
+{% endif %}
+
+{% if tor_ServerTransportPlugin is defined %}
+ServerTransportPlugin {{ tor_ServerTransportPlugin }}
+{% endif %}
+
 {% for service in tor_hidden_services %}
 HiddenServiceDir {{ tor_hidden_services_parent_dir }}/{{ service.dir }}
 {% for hidden_port in service.ports %}
