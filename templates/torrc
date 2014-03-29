@@ -11,7 +11,7 @@
 ExitPolicy {{ tor_ExitPolicy }}
 {% endif %}
 
-{% if tor_hidden_services is defined %}}
+{% if tor_hidden_services is defined %}
 {% for service in tor_hidden_services %}
 HiddenServiceDir {{ tor_hidden_services_parent_dir }}/{{ service.dir }}
 {% for hidden_port in service.ports %}
