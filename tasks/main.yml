@@ -2,6 +2,10 @@
 
 - include: install.yml
 
+- include: install_pip_obfsproxy.yml
+  sudo: no
+  when: tor_obfsproxy_virtenv is defined
+
 - include: hidden_services.yml
   when: tor_hidden_services is defined
 
@@ -13,6 +17,5 @@
 - include: set_hidden_services_facts.yml
   when: tor_hidden_services is defined
 
-- include: install_obfsproxy.yml
-  when: tor_obfsproxy_home is defined
+
 

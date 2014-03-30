@@ -24,6 +24,56 @@ Requirements
 
 Works on Debian and Ubuntu.
 
+Example Tor Bridge Playbook
+---------------------------
+
+```yml
+---
+
+- hosts: tor-bridges
+  user: ansible
+  connection: ssh
+  vars:
+    relay_hidden_service_name: "hidden_ssh"
+    hidden_ssh_virtport: 6669
+    hidden_ssh_target: "127.0.0.1:22"
+    relay_hidden_services_parent_dir: "/var/lib/tor/services"
+    relay_hidden_services: [ { dir: "{{ relay_hidden_service_name }}",
+                               ports: [ { virtport: "{{ hidden_ssh_virtport }}",
+                                 target: "{{ hidden_ssh_target }}" } ] }
+    ]
+  roles:
+    - { role: ansible-role-firewall,
+        firewall_allowed_tcp_ports: [ 22, 4703 ],
+        sudo: yes
+      }
+    - { role: ansible-wheezy-common,
+        sudo: yes
+      }
+    - { role: Ansibles.openssh,
+        sudo: yes
+      }
+    - { role: david415.ansible-tor,
+        ansible_distribution_release: "wheezy",
+        tor_BridgeRelay: 1,
+        tor_PublishServerDescriptor: "bridge",
+        tor_obfsproxy_home: "/home/ansible",
+        tor_obfsproxy_virtenv: "virtenv_obfsproxy",
+        tor_ORPort: 9001,
+        tor_ServerTransportPlugin: "scramblesuit exec {{ tor_obfsproxy_home }}/{{ tor_obfsproxy_virtenv }}/bin/obfsproxy managed",
+        tor_ServerTransportListenAddr: "scramblesuit 0.0.0.0:4703",
+        tor_obfsproxy_virtenv_version: "virtualenv-1.11.4",
+        tor_virtenv_tarball_url: "https://pypi.python.org/packages/source/v/virtualenv/virtualenv-1.11.4.tar.gz",
+        tor_virtenv_tarball: "virtualenv-1.11.4.tar.gz",
+        tor_ExitPolicy: "reject *:*",
+        tor_hidden_services: "{{ relay_hidden_services }}",
+        tor_hidden_services_parent_dir: "{{ relay_hidden_services_parent_dir }}",
+        tor_wait_for_hidden_services: yes,
+        sudo: yes
+      }
+```
+
+
 
 Example Tor Relay Playbook
 --------------------------
@@ -101,7 +151,6 @@ specify multiple lines in the torrc that begin with the dictionary key.
 Currently, the torrc template looks like this:
 
 ```yml
-
 {% for configkey, value in hostvars[inventory_hostname].iteritems() %}
 {% if configkey|truncate(3, True) == "tor..." %}
 {% for element in hostvars[inventory_hostname][configkey] %}
@@ -114,6 +163,26 @@ Currently, the torrc template looks like this:
 ExitPolicy {{ tor_ExitPolicy }}
 {% endif %}
 
+{% if tor_ORPort is defined %}
+ORPort {{ tor_ORPort }}
+{% endif %}
+{% if tor_UseBridges is defined %}
+UseBridges {{ tor_UseBridges }}
+{% endif %}
+{% if tor_BridgeRelay is defined %}
+BridgeRelay {{ tor_BridgeRelay }}
+{% endif %}
+{% if tor_PublishServerDescriptor is defined %}
+PublishServerDescriptor {{ tor_PublishServerDescriptor }}
+{% endif %}
+{% if tor_ServerTransportPlugin is defined %}
+ServerTransportPlugin {{ tor_ServerTransportPlugin }}
+{% endif %}
+{% if tor_ServerTransportListenAddr is defined %}
+ServerTransportListenAddr {{ tor_ServerTransportListenAddr }}
+{% endif %}
+
+
 {% if tor_hidden_services is defined %}
 {% for service in tor_hidden_services %}
 HiddenServiceDir {{ tor_hidden_services_parent_dir }}/{{ service.dir }}
@@ -122,8 +191,6 @@ HiddenServicePort {{ hidden_port.virtport }} {{ hidden_port.target }}
 {% endfor %}
 {% endfor %}
 {% endif %}
-
-
 ```
 
 

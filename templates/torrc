@@ -11,6 +11,9 @@
 ExitPolicy {{ tor_ExitPolicy }}
 {% endif %}
 
+{% if tor_ORPort is defined %}
+ORPort {{ tor_ORPort }}
+{% endif %}
 {% if tor_UseBridges is defined %}
 UseBridges {{ tor_UseBridges }}
 {% endif %}
@@ -23,6 +26,10 @@ PublishServerDescriptor {{ tor_PublishServerDescriptor }}
 {% if tor_ServerTransportPlugin is defined %}
 ServerTransportPlugin {{ tor_ServerTransportPlugin }}
 {% endif %}
+{% if tor_ServerTransportListenAddr is defined %}
+ServerTransportListenAddr {{ tor_ServerTransportListenAddr }}
+{% endif %}
+
 
 {% if tor_hidden_services is defined %}
 {% for service in tor_hidden_services %}
