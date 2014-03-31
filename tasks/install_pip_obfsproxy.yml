@@ -55,11 +55,12 @@
   command: tar xf {{ tor_obfsproxy_home }}/{{ tor_virtenv_tarball }} --directory {{ tor_obfsproxy_home }}
   when: virtenv_tarball_dir_st.stat.isdir is not defined
 
-# BUG: must needs ---> usewithtor pip install obfsproxy
+- name: ensure obfsproxy dependency gmplib is installed
+  apt: pkg=libgmp-dev state=latest
+  sudo: yes
+
 - name: ensure obfsproxy is pip installed in our python virtual env
-  pip:
-    name=obfsproxy
-    state=present
-    virtualenv={{ tor_obfsproxy_home }}/{{ tor_obfsproxy_virtenv }}
-    virtualenv_command={{ tor_obfsproxy_home }}/{{ tor_obfsproxy_virtenv_version }}/virtualenv.py
+  shell: . {{ tor_obfsproxy_home }}/{{ tor_obfsproxy_virtenv }}/bin/activate; usewithtor pip install {{ tor_obfsproxy_git_url }}
+
+
 
