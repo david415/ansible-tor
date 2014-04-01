@@ -1,0 +1,36 @@
+---
+
+- name: get state of tor source directory
+  stat: path=tor
+  register: dir_st
+  sudo: no
+
+- name: ensure build dependencies are installed
+  apt: pkg="{{ item }}" state=latest
+  with_items:
+    - autoconf
+    - libevent-dev
+    - libssl-dev
+    - zlib1g-dev
+
+# BUG: must needs check gpg signed release tags
+- name: ensure tor source is git cloned
+  command: git clone "{{ tor_git_url }}"
+  when: dir_st.stat.isdir is not defined
+  sudo: no
+
+- name: ensure latest git changes pulled
+  shell: chdir=tor git pull origin master
+  sudo: no
+
+- name: ensure tor src is configured
+  shell: chdir=tor ./autogen.sh && ./configure --prefix=/opt/tor --disable-asciidoc
+  sudo: no
+
+- name: ensure tor src is built
+  command: chdir=tor make
+  sudo: no
+
+- name: ensure built tor src is installed
+  command: chdir=tor make install
+

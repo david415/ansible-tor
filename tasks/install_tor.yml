@@ -1,0 +1,7 @@
+---
+
+- include: install_git_tor.yml
+  when: tor_install_from_git is defined
+
+- include: install_apt_tor.yml
+  when: tor_install_from_git is not defined

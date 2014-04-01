@@ -60,7 +60,7 @@
   sudo: yes
 
 - name: ensure obfsproxy is pip installed in our python virtual env
-  shell: . {{ tor_obfsproxy_home }}/{{ tor_obfsproxy_virtenv }}/bin/activate; usewithtor pip install {{ tor_obfsproxy_git_url }}
+  shell: . {{ tor_obfsproxy_home }}/{{ tor_obfsproxy_virtenv }}/bin/activate && pip install {{ tor_obfsproxy_git_url }}
 
 
 

@@ -1,4 +1,5 @@
 ---
+tor_git_url: https://git.torproject.org/tor.git
 tor_hidden_services_parent_dir: /var/lib/tor/services
 tor_obfsproxy_git_url: obfsproxy
 tor_obfsproxy_virtenv: virtenv_obfsproxy

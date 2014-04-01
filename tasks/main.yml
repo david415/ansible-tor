@@ -1,6 +1,13 @@
 ---
 
-- include: install.yml
+- name: get state of installed tor
+  command: which tor
+  register: which_tor
+  ignore_errors: True
+
+- name: install tor
+  include: install_tor.yml
+  when: which_tor.rc != 0
 
 - include: install_pip_obfsproxy.yml
   sudo: no

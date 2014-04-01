@@ -23,14 +23,15 @@ BridgeRelay {{ tor_BridgeRelay }}
 {% if tor_PublishServerDescriptor is defined %}
 PublishServerDescriptor {{ tor_PublishServerDescriptor }}
 {% endif %}
-{% if tor_ServerTransportPlugin is defined %}
-ServerTransportPlugin {{ tor_ServerTransportPlugin }}
-{% endif %}
 {% if tor_ServerTransportListenAddr is defined %}
 ServerTransportListenAddr {{ tor_ServerTransportListenAddr }}
 {% endif %}
-
-
+{% if tor_ServerTransportPlugin is defined %}
+ServerTransportPlugin {{ tor_ServerTransportPlugin }}
+{% endif %}
+{% if tor_ServerTransportOptions %}
+ServerTransportOptions {{ tor_ServerTransportOptions }}
+{% endif %}
 {% if tor_hidden_services is defined %}
 {% for service in tor_hidden_services %}
 HiddenServiceDir {{ tor_hidden_services_parent_dir }}/{{ service.dir }}
@@ -39,3 +40,4 @@ HiddenServicePort {{ hidden_port.virtport }} {{ hidden_port.target }}
 {% endfor %}
 {% endfor %}
 {% endif %}
+
