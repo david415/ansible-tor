@@ -25,8 +25,46 @@ Requirements
 Works on Debian and Ubuntu.
 
 
+Example Tor Scramblesuit Bridge Playbook
+----------------------------------------
+
+This playbook configures a scramblesuit
+( http://www.cs.kau.se/philwint/scramblesuit/ ) tor bridge using the latest
+obfsproxy available to pip; installs into a python virtualenv.
+
+```yml
+---
+
+- hosts: tor-bridges
+  roles:
+    - { role: ansible-role-firewall,
+        firewall_allowed_tcp_ports: [ 22, 4703 ],
+        sudo: yes
+      }
+    - { role: david415.ansible-tor,
+        ansible_distribution_release: "wheezy",
+        tor_BridgeRelay: 1,
+        tor_PublishServerDescriptor: "bridge",
+        tor_obfsproxy_home: "/home/ansible",
+        tor_obfsproxy_virtenv: "virtenv_obfsproxy",
+        tor_ORPort: 9001,
+        tor_ServerTransportPlugin: "scramblesuit exec {{ tor_obfsproxy_home }}/{{ tor_obfsproxy_virtenv }}/bin/obfsproxy --log-min-severity=info --log-file=/var/log/tor/obfsproxy.log managed",
+        tor_ServerTransportListenAddr: "scramblesuit 0.0.0.0:4703",
+        tor_ExitPolicy: "reject *:*",
+        sudo: yes
+      }
+```
+
+
 Example Tor Bananaphone Bridge Playbook
 ---------------------------------------
+
+This playbook demonstrates configuring a tor bridge
+with an obfsproxy installed from my git repo so that
+the bananaphone pluggable transport is available.
+
+Read about the bananaphone pluggable transport for tor - http://bananaphone.io/
+
 
 ```yml
 ---
@@ -56,17 +94,18 @@ Example Tor Bananaphone Bridge Playbook
 Example Tor Relay Playbook
 --------------------------
 
-This ansible play will fully configure a fleet of servers as tor
-relays... with an ssh hidden service and appropriate firewall rules.
 
-Additionally here we demonstrate this ansible-tor role's ability to
-wait for the hidden services to be created... by awaiting the
-existence of the tor hidden service hostname files. This happens
-when the role variable "tor_wait_for_hidden_services" is set to yes.
+This example playbook sets up tor relays with hidden service for
+ssh...
+
+This playbook needlessly demonstrates waiting for the hidden services
+to be created... by awaiting the existence of the tor hidden service
+hostname files. This happens when the role variable
+"tor_wait_for_hidden_services" is set to yes.
 
 This feature could be useful when configuring other services that
-depend on knowing the hidden service's onion address.
-
+depend on knowing the hidden service's onion address... such as
+Tahoe-LAFS - https://tahoe-lafs.org/trac/tahoe-lafs
 
 Read about tor hidden services here:
 https://www.torproject.org/docs/tor-hidden-service.html.en
@@ -75,26 +114,15 @@ https://www.torproject.org/docs/tor-hidden-service.html.en
 ```yml
 ---
 - hosts: tor-relays
-  user: ansible
-  connection: ssh
   vars:
-    relay_hidden_service_name: "hidden_ssh"
-    hidden_ssh_virtport: 6669
-    hidden_ssh_target: "127.0.0.1:22"
     relay_hidden_services_parent_dir: "/var/lib/tor/services"
-    relay_hidden_services: [ { dir: "{{ relay_hidden_service_name }}",
-                               ports: [ { virtport: "{{ hidden_ssh_virtport }}",
-                                 target: "{{ hidden_ssh_target }}" } ] }
+    relay_hidden_services: [ { dir: "hidden_ssh",
+                               ports: [ { virtport: "22",
+                                 target: "localhost:22" } ] }
     ]
   roles:
     - { role: ansible-role-firewall,
         firewall_allowed_tcp_ports: [ 22, 9001 ],
-        sudo: yes
-      }
-    - { role: ansible-wheezy-common,
-        sudo: yes
-      }
-    - { role: Ansibles.openssh,
         sudo: yes
       }
     - { role: david415.ansible-tor,

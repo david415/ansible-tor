@@ -36,7 +36,7 @@ ServerTransportListenAddr {{ tor_ServerTransportListenAddr }}
 {% if tor_ServerTransportPlugin is defined %}
 ServerTransportPlugin {{ tor_ServerTransportPlugin }}
 {% endif %}
-{% if tor_ServerTransportOptions %}
+{% if tor_ServerTransportOptions is defined %}
 ServerTransportOptions {{ tor_ServerTransportOptions }}
 {% endif %}
 {% if tor_hidden_services is defined %}
