@@ -4,7 +4,6 @@
   stat: path={{ tor_obfsproxy_home }}/{{ tor_virtenv_tarball }}
   register: virtenv_tarball_st
 
-# BUG: must usewithtor
 - name: ensure virtenv tarball downloaded
   get_url: >
     url={{ tor_virtenv_tarball_url }}
@@ -16,7 +15,6 @@
   stat: path={{ tor_obfsproxy_home }}/{{ tor_virtenv_tarball }}
   register: virtenv_tarball_sig_st
 
-# BUG: must usewithtor
 - name: ensure virtenv tarball gpg signature downloaded
   get_url: >
     url={{ tor_virtenv_tarball_url }}.asc

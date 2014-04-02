@@ -11,6 +11,13 @@
 ExitPolicy {{ tor_ExitPolicy }}
 {% endif %}
 
+{% if not tor_apt_single %}
+RunAsDaemon 1
+User {{ tor_user }}
+PidFile {{ tor_PidFile }}
+Log {{ tor_Log }}
+{% endif %}
+
 {% if tor_ORPort is defined %}
 ORPort {{ tor_ORPort }}
 {% endif %}

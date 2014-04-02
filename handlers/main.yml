@@ -1,5 +1,5 @@
 ---
 # handlers for ansible-tor
 
-- name: restart tor
+- name: restart single apt tor
   service: name=tor state=restarted

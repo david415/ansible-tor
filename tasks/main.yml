@@ -1,5 +1,6 @@
 ---
 
+## install
 - name: get state of installed tor
   command: which tor
   register: which_tor
@@ -13,16 +14,18 @@
   sudo: no
   when: tor_obfsproxy_virtenv is defined
 
+
+## configure
+
 - include: hidden_services.yml
   when: tor_hidden_services is defined
 
-- include: configure.yml
+- include: configure_apt_single.yml
 
+
+## wait for hidden services
 - include: wait_for_hidden_services.yml
   when: tor_wait_for_hidden_services is defined
 
 - include: set_hidden_services_facts.yml
   when: tor_hidden_services is defined
-
-
-
