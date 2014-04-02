@@ -1,7 +1,0 @@
----
-
-- name: set_fact tor hidden services
-  set_fact: tor_hidden_services_fact="{{ tor_hidden_services }}"
-
-- name: set_fact tor hidden services parent dir
-  set_fact: tor_hidden_services_parent_dir_fact="{{ tor_hidden_services_parent_dir }}"

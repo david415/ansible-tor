@@ -32,23 +32,9 @@ Example Tor Bananaphone Bridge Playbook
 ---
 
 - hosts: tor-bridges
-  user: ansible
-  connection: ssh
-  vars:
-    relay_hidden_service_name: "hidden_ssh"
-    hidden_ssh_virtport: 6669
-    hidden_ssh_target: "127.0.0.1:22"
-    relay_hidden_services_parent_dir: "/var/lib/tor/services"
-    relay_hidden_services: [ { dir: "{{ relay_hidden_service_name }}",
-                               ports: [ { virtport: "{{ hidden_ssh_virtport }}",
-                                 target: "{{ hidden_ssh_target }}" } ] }
-    ]
   roles:
     - { role: ansible-role-firewall,
         firewall_allowed_tcp_ports: [ 22, 4703 ],
-        sudo: yes
-      }
-    - { role: Ansibles.openssh,
         sudo: yes
       }
     - { role: david415.ansible-tor,
@@ -62,63 +48,9 @@ Example Tor Bananaphone Bridge Playbook
         tor_ServerTransportOptions: "bananaphone corpus=/usr/share/dict/words encodingSpec=words,sha1,4 modelName=markov order=1",
         tor_ServerTransportListenAddr: "bananaphone 0.0.0.0:4703",
         tor_ExitPolicy: "reject *:*",
-        tor_hidden_services: "{{ relay_hidden_services }}",
-        tor_hidden_services_parent_dir: "{{ relay_hidden_services_parent_dir }}",
-        tor_wait_for_hidden_services: no,
         sudo: yes
       }
 ```
-
-
-Example Tor Bridge Playbook
----------------------------
-
-```yml
----
-
-- hosts: tor-bridges
-  user: ansible
-  connection: ssh
-  vars:
-    relay_hidden_service_name: "hidden_ssh"
-    hidden_ssh_virtport: 6669
-    hidden_ssh_target: "127.0.0.1:22"
-    relay_hidden_services_parent_dir: "/var/lib/tor/services"
-    relay_hidden_services: [ { dir: "{{ relay_hidden_service_name }}",
-                               ports: [ { virtport: "{{ hidden_ssh_virtport }}",
-                                 target: "{{ hidden_ssh_target }}" } ] }
-    ]
-  roles:
-    - { role: ansible-role-firewall,
-        firewall_allowed_tcp_ports: [ 22, 4703 ],
-        sudo: yes
-      }
-    - { role: ansible-wheezy-common,
-        sudo: yes
-      }
-    - { role: Ansibles.openssh,
-        sudo: yes
-      }
-    - { role: david415.ansible-tor,
-        ansible_distribution_release: "wheezy",
-        tor_BridgeRelay: 1,
-        tor_PublishServerDescriptor: "bridge",
-        tor_obfsproxy_home: "/home/ansible",
-        tor_obfsproxy_virtenv: "virtenv_obfsproxy",
-        tor_ORPort: 9001,
-        tor_ServerTransportPlugin: "scramblesuit exec {{ tor_obfsproxy_home }}/{{ tor_obfsproxy_virtenv }}/bin/obfsproxy managed",
-        tor_ServerTransportListenAddr: "scramblesuit 0.0.0.0:4703",
-        tor_obfsproxy_virtenv_version: "virtualenv-1.11.4",
-        tor_virtenv_tarball_url: "https://pypi.python.org/packages/source/v/virtualenv/virtualenv-1.11.4.tar.gz",
-        tor_virtenv_tarball: "virtualenv-1.11.4.tar.gz",
-        tor_ExitPolicy: "reject *:*",
-        tor_hidden_services: "{{ relay_hidden_services }}",
-        tor_hidden_services_parent_dir: "{{ relay_hidden_services_parent_dir }}",
-        tor_wait_for_hidden_services: yes,
-        sudo: yes
-      }
-```
-
 
 
 Example Tor Relay Playbook

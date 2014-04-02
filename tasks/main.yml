@@ -25,7 +25,4 @@
 
 ## wait for hidden services
 - include: wait_for_hidden_services.yml
-  when: tor_wait_for_hidden_services is defined
-
-- include: set_hidden_services_facts.yml
-  when: tor_hidden_services is defined
+  when: tor_wait_for_hidden_services
