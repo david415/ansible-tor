@@ -13,7 +13,7 @@
 
 - name: setup tor apt repo
   apt_repository: >
-    repo='deb http://deb.torproject.org/torproject.org {{ ansible_distribution_release }} main'
+    repo='deb http://deb.torproject.org/torproject.org {{ tor_distribution_release }} main'
     state=present 
     update_cache=yes
 

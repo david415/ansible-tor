@@ -25,6 +25,27 @@ Requirements
 Works on Debian and Ubuntu.
 
 
+Role Variables
+--------------
+
+tor_distribution_release should be set to the desired distribution of
+the Tor Project's APT repo - http://deb.torproject.org/torproject.org
+
+Perhaps many debian users will want to specify "wheezy"... unless you are
+running a bridge then you probably want
+"tor-experimental-0.2.5.x-wheezy" so that you can have
+ServerTransportOptions in your torrc.
+
+tor_obfsproxy_home variable should set when you want to use obfsproxy
+with your bridge configuration. Perhaps I should change this to be a
+boolean variable names tor_run_obfsproxy... and then set a reasonable
+default for the obfsproxy python virtual env directory.
+
+tor_wait_for_hidden_services can be set to yes if you would like the
+ansible-tor role to wait for the hidden services to start.
+
+
+
 Example Tor Scramblesuit Bridge Playbook
 ----------------------------------------
 
@@ -42,11 +63,10 @@ obfsproxy available to pip; installs into a python virtualenv.
         sudo: yes
       }
     - { role: david415.ansible-tor,
-        ansible_distribution_release: "wheezy",
+        tor_distribution_release: "wheezy",
         tor_BridgeRelay: 1,
         tor_PublishServerDescriptor: "bridge",
         tor_obfsproxy_home: "/home/ansible",
-        tor_obfsproxy_virtenv: "virtenv_obfsproxy",
         tor_ORPort: 9001,
         tor_ServerTransportPlugin: "scramblesuit exec {{ tor_obfsproxy_home }}/{{ tor_obfsproxy_virtenv }}/bin/obfsproxy --log-min-severity=info --log-file=/var/log/tor/obfsproxy.log managed",
         tor_ServerTransportListenAddr: "scramblesuit 0.0.0.0:4703",
@@ -76,7 +96,7 @@ Read about the bananaphone pluggable transport for tor - http://bananaphone.io/
         sudo: yes
       }
     - { role: david415.ansible-tor,
-        ansible_distribution_release: "tor-experimental-0.2.5.x-wheezy",
+        tor_distribution_release: "tor-experimental-0.2.5.x-wheezy",
         tor_BridgeRelay: 1,
         tor_PublishServerDescriptor: "bridge",
         tor_obfsproxy_home: "/home/ansible",
@@ -105,8 +125,11 @@ hostname files. This happens when the role variable
 
 This feature could be useful when configuring other services that
 depend on knowing the hidden service's onion address... such as
-Tahoe-LAFS - https://tahoe-lafs.org/trac/tahoe-lafs
+my ansible-tahoe-lafs role:
+https://github.com/david415/ansible-tahoe-lafs
 
+Read about Tahoe-LAFS here:
+https://tahoe-lafs.org/trac/tahoe-lafs
 Read about tor hidden services here:
 https://www.torproject.org/docs/tor-hidden-service.html.en
 
@@ -114,6 +137,8 @@ https://www.torproject.org/docs/tor-hidden-service.html.en
 ```yml
 ---
 - hosts: tor-relays
+  user: ansible
+  connection: ssh
   vars:
     relay_hidden_services_parent_dir: "/var/lib/tor/services"
     relay_hidden_services: [ { dir: "hidden_ssh",
@@ -126,7 +151,7 @@ https://www.torproject.org/docs/tor-hidden-service.html.en
         sudo: yes
       }
     - { role: david415.ansible-tor,
-        ansible_distribution_release: "wheezy",
+        tor_distribution_release: "wheezy",
         tor_ExitPolicy: "reject *:*",
         tor_hidden_services: "{{ relay_hidden_services }}",
         tor_hidden_services_parent_dir: "{{ relay_hidden_services_parent_dir }}",

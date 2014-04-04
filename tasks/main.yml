@@ -5,7 +5,7 @@
 
 - include: install_pip_obfsproxy.yml
   sudo: no
-  when: tor_obfsproxy_virtenv is defined
+  when: tor_obfsproxy_home is defined
 
 
 ## configure
