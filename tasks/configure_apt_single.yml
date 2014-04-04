@@ -4,7 +4,9 @@
   template: src=torrc dest=/etc/tor/torrc
     owner=root group=root mode=0644
   notify:
-  - restart single apt tor
+  - restart tor
 
-- name: make sure tor is running
+- meta: flush_handlers
+
+- name: ensure tor is running
   service: name=tor state=running
