@@ -9,15 +9,6 @@ finesse, concurrency and idempotency!
 
 Feature requests encouraged!
 
-Future code commits coming soon... including
-task lists to install and fully configure tor bridges
-with the latest obfsproxy Pluggable Transports (such as
-Scramblesuit and obfs3) and example playbooks demonastrating
-various maintenance procedures such as Tor bridge
-IP address reassignment and  building a local inventory
-of hidden ssh service onion addresses.
-
-
 
 Requirements
 ------------
@@ -161,16 +152,49 @@ https://www.torproject.org/docs/tor-hidden-service.html.en
 ```
 
 
+Example Multi-tor-instance playbook
+-----------------------------------
+
+For this example I'm using rfc1918 IP address space for this example
+whereas you would of course normally use publicly routed IP addresses.
+This example does what it looks like; configures and runs three instances of tor.
+
+Each tor instance can have it's own unique torrc options additionally
+specified in the host_vars/group_vars because the same torrc template is used.
+
+```yml
+---
+- hosts: tor-relays
+  roles:
+    - { role: david415.ansible-tor,
+        tor_distribution_release: "wheezy",
+        tor_ExitPolicy: "reject *:*",
+        tor_instance_parent_dir: "/etc/tor/instances",
+        tor_instances: [ {
+                          name: "relay1",
+                          tor_ORPort: ["192.168.1.1:9002"],
+                          tor_SocksPort: ["8041"]
+                        },
+                        {
+                          name: "relay2",
+                          tor_ORPort: ["192.168.1.2:9002"],
+                          tor_SocksPort: ["8042"]
+                        },
+                        {
+                          name: "relay3",
+                          tor_ORPort: ["192.168.1.3:9002"],
+                          tor_SocksPort: ["8043"]
+                        }],
+        sudo: yes
+      }
+```
+
+
 Tor configuration - torrc
 -------------------------
 
-Suggestions for a better templating scheme welcome.
-For the time being it works fairly well to have
-torrc options be set from host_vars/group_vars and
+It works fairly well to have torrc options be set from host_vars/group_vars and
 also set from role variables.
-
-You should look at the example playbooks and the template code
-itself to see which role variables to set. I should perhaps change the role variable templating scheme...
 
 The host_vars variable names must begin with "tor_";
 Here's an example setting "Nickname":
@@ -181,6 +205,9 @@ tor_Nickname: [ "OnionRobot" ]
 
 The dictionary value is a list because in some cases you may want to
 specify multiple lines in the torrc that begin with the dictionary key.
+
+Various role variables control template output... this is a work in
+progress; refer to the templates/torrc for a more detailed overview.
 
 
 License
