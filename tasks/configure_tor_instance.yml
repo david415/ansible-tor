@@ -1,0 +1,32 @@
+---
+
+- name: ensure tor instance parent dir exists
+  file: >
+    path={{ tor_instance_parent_dir }}
+    state=directory
+    owner={{ tor_user }}
+
+- name: ensure tor instances data dir exist
+  file: >
+    path="{{ tor_instance_parent_dir }}/{{ item.name }}/data"
+    state=directory
+    owner={{ tor_user }}
+  with_items: tor_instances
+
+- name: ensure instances template torrc
+  template: >
+    src=torrc
+    dest="{{ tor_instance_parent_dir }}/{{ item.name }}/torrc"
+    owner={{ tor_user }}
+    mode=0644
+  with_items: tor_instances
+  register: instances_status
+
+- name: "ensure tor instances are reloaded if it's torrc changed"
+  shell: "kill -HUP `cat {{ tor_instance_parent_dir }}/{{ item.item.name }}/tor.pid`"
+  with_items: instances_status.results
+  when: item.changed == True
+
+- name: ensure tor instances are running
+  shell: "pgrep `cat {{ tor_instance_parent_dir }}/{{ item.name }}/tor.pid` || tor -f {{ tor_instance_parent_dir }}/{{ item.name }}/torrc"
+  with_items: tor_instances

@@ -14,7 +14,10 @@
   when: tor_hidden_services is defined
 
 - include: configure_apt_single.yml
+  when: tor_instances is not defined
 
+- include: configure_tor_instance.yml
+  when: tor_instances is defined
 
 ## wait for hidden services
 - include: wait_for_hidden_services.yml

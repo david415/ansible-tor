@@ -1,7 +1,5 @@
 ---
 
-tor_apt_single: yes
-
 tor_user: debian-tor
 tor_PidFile: /var/run/tor/tor.pid
 tor_LogDir: /var/log/tor/log
