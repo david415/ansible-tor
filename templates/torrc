@@ -1,4 +1,5 @@
 # ansible generated torrc
+
 {% for configkey, value in hostvars[inventory_hostname].iteritems() %}
 {% if configkey|truncate(3, True) == "tor..." %}
 {% for element in hostvars[inventory_hostname][configkey] %}
@@ -6,8 +7,15 @@
 {% endfor %}
 {% endif %}
 {% endfor %}
-{% if tor_instances is defined %}
+
+{% if proc_instances is defined and item is defined %}
+
+RunAsDaemon 1
+User {{ tor_user }}
+PidFile {{ tor_instance_parent_dir }}/{{ item.name }}/tor.pid
+Log warn file {{ tor_instance_parent_dir }}/{{ item.name }}/log
 DataDirectory {{ tor_instance_parent_dir }}/{{ item.name }}/data
+
 {% for configkey, value in item.iteritems() %}
 {% if configkey|truncate(3, True) == "tor..." %}
 {% for element in item[configkey] %}
@@ -15,15 +23,11 @@ DataDirectory {{ tor_instance_parent_dir }}/{{ item.name }}/data
 {% endfor %}
 {% endif %}
 {% endfor %}
+
 {% endif %}
+
 {% if tor_ExitPolicy is defined %}
 ExitPolicy {{ tor_ExitPolicy }}
-{% endif %}
-{% if tor_instances is not defined %}
-RunAsDaemon 1
-User {{ tor_user }}
-PidFile {{ tor_PidFile }}
-Log {{ tor_Log }}
 {% endif %}
 {% if tor_ORPort is defined %}
 ORPort {{ tor_ORPort }}

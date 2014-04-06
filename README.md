@@ -155,12 +155,66 @@ https://www.torproject.org/docs/tor-hidden-service.html.en
 Example Multi-tor-instance playbook
 -----------------------------------
 
-For this example I'm using rfc1918 IP address space for this example
-whereas you would of course normally use publicly routed IP addresses.
-This example does what it looks like; configures and runs three instances of tor.
 
-Each tor instance can have it's own unique torrc options additionally
-specified in the host_vars/group_vars because the same torrc template is used.
+polytorus-ansibilus.yml:
+```yml
+---
+- hosts: tor-relays
+  roles:
+    - { role: david415.ansible-tor,
+        tor_distribution_release: "wheezy",
+        tor_ExitPolicy: "reject *:*",
+        sudo: yes
+      }
+```
+
+A simple playbook like this can be used to deploy
+many instances of tor on many servers; here I assume the user has
+setup their ansible project according to the best practices
+directory-layout specified here:
+
+http://docs.ansible.com/playbooks_best_practices.html#directory-layout
+
+...and simply run a command like this: ansible-playbook -i production polytorus-ansibilus.ym
+
+This case presumes there to be an inventory file called "production"
+and an inventory group within called "tor-relays".
+
+You can configure multiple tor instances using the host_vars file
+for each host. Here's what an example host_vars file looks like (with
+rfc1918 ip addrs):
+
+host_vars/192.168.1.1:
+```yml
+tor_Nickname: [ "ScratchMaster" ]
+proc_instances: [ {
+name: "relay1",
+tor_ORPort: ["192.168.1.1:9002"],
+tor_SOCKSPort: ["8041"]
+},
+{
+name: "relay2",
+tor_ORPort: ["192.168.1.2:9002"],
+tor_SOCKSPort: ["8042"]
+},
+{
+name: "relay3",
+tor_ORPort: ["192.168.1.3:9002"],
+tor_SOCKSPort: ["8043"]
+}]
+```
+
+In the above example playbook, all the role variables get applied to
+all tor instances. If you want to control the role variables for a
+specific host then you must use that host's host_vars file.
+
+Note: when this role is used in "multi-tor process mode"... meaning that the
+proc_instances variable is defined... then the torrc template will set
+reasonable defaults for these torrc options: User, PidFile, Log and DataDirectory.
+
+This next example is NOT very practical because it can only be used
+with a host inventory with one host! It it were to be used with
+multiple hosts then their torrc files would contain the same IP addresses.
 
 ```yml
 ---
@@ -170,7 +224,7 @@ specified in the host_vars/group_vars because the same torrc template is used.
         tor_distribution_release: "wheezy",
         tor_ExitPolicy: "reject *:*",
         tor_instance_parent_dir: "/etc/tor/instances",
-        tor_instances: [ {
+        proc_instances: [ {
                           name: "relay1",
                           tor_ORPort: ["192.168.1.1:9002"],
                           tor_SocksPort: ["8041"]
@@ -193,7 +247,7 @@ specified in the host_vars/group_vars because the same torrc template is used.
 Tor configuration - torrc
 -------------------------
 
-It works fairly well to have torrc options be set from host_vars/group_vars and
+torrc may be options be set from host_vars/group_vars and
 also set from role variables.
 
 The host_vars variable names must begin with "tor_";
