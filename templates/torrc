@@ -26,6 +26,12 @@ DataDirectory {{ tor_instance_parent_dir }}/{{ item.name }}/data
 
 {% endif %}
 
+{% if tor_Nickname is defined %}
+Nickname {{ tor_Nickname }}
+{% endif %}
+{% if tor_ContactInfo is defined %}
+ContactInfo {{ tor_ContactInfo }}
+{% endif %}
 {% if tor_ExitPolicy is defined %}
 ExitPolicy {{ tor_ExitPolicy }}
 {% endif %}
