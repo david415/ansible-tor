@@ -6,8 +6,9 @@
     - python-apt
     - python-pycurl
 
+
 - name: install tor project apt signing gpg key
-  apt_key: id=0x886DDD89
+  apt_key: >
     state=present
     data="{{ lookup('file', 'tor-signing-key.pub') }}"
 
