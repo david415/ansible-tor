@@ -7,7 +7,24 @@ I hope that relay operators will find this useful for deploying
 and maintaining large numbers of Tor relays and bridges with
 finesse, concurrency and idempotency!
 
-Feature requests encouraged!
+This ansible role can help you reduce the complexity to a single
+command for deploying one or more tor relays or tor bridges with or
+without obfsproxy.
+
+Here I assume the user has setup their ansible project directory according to the best practices
+directory-layout specified here:
+
+http://docs.ansible.com/playbooks_best_practices.html#directory-layout
+
+...and simply run a command like this: ansible-playbook -i production tor-relays.yml
+
+In this case I'm running the tor-relays.yml playbook against
+the "production" inventory file. This tor-relays playbook might
+specify a host group called tor-relays... which is defined in the
+inventory file. I could have many other host groups defined in the
+inventory as well such as: tor-exit-relays, tor-bridges,
+tor-bananaphone-bridges, tor-hidden-tahoe-storage-nodes etc.
+
 
 
 Requirements
@@ -16,33 +33,36 @@ Requirements
 Works on Debian and Ubuntu.
 
 
+
 Role Variables
 --------------
 
 tor_distribution_release should be set to the desired distribution of
 the Tor Project's APT repo - http://deb.torproject.org/torproject.org
 
-Perhaps many debian users will want to specify "wheezy"... unless you are
-running a bridge then you probably want
+Perhaps many debian users will want to specify "wheezy"... however if
+you intend to operate a tor bridge then you unless you probably want
 "tor-experimental-0.2.5.x-wheezy" so that you can have
 ServerTransportOptions in your torrc.
 
 tor_obfsproxy_home variable should set when you want to use obfsproxy
 with your bridge configuration. Perhaps I should change this to be a
 boolean variable names tor_run_obfsproxy... and then set a reasonable
-default for the obfsproxy python virtual env directory.
+default for the obfsproxy python virtual env directory?
 
 tor_wait_for_hidden_services can be set to yes if you would like the
-ansible-tor role to wait for the hidden services to start.
+ansible-tor role to wait for the newly created tor hidden services to
+start. It does so by waiting for the tor hidden service hostname file
+to appear.
 
 
 
 Example Tor Scramblesuit Bridge Playbook
 ----------------------------------------
 
-This playbook configures a scramblesuit
+This playbook installs and fully configures a scramblesuit
 ( http://www.cs.kau.se/philwint/scramblesuit/ ) tor bridge using the latest
-obfsproxy available to pip; installs into a python virtualenv.
+obfsproxy available to pip (installs into a python virtualenv).
 
 ```yml
 ---
@@ -72,8 +92,12 @@ Example Tor Bananaphone Bridge Playbook
 
 This playbook demonstrates configuring a tor bridge
 with an obfsproxy installed from my git repo so that
-the bananaphone pluggable transport is available.
+the bananaphone pluggable transport is available (it has not been
+merged upstream).
 
+Bananaphone provides tor over markov chains!
+If you have sensitive or interesting documents then please consider
+operating a bananaphone bridge utilizing these text corpuses.
 Read about the bananaphone pluggable transport for tor - http://bananaphone.io/
 
 
@@ -109,7 +133,7 @@ Example Tor Relay Playbook
 This example playbook sets up tor relays with hidden service for
 ssh...
 
-This playbook needlessly demonstrates waiting for the hidden services
+This playbook demonstrates waiting for the hidden services
 to be created... by awaiting the existence of the tor hidden service
 hostname files. This happens when the role variable
 "tor_wait_for_hidden_services" is set to yes.
@@ -168,21 +192,11 @@ polytorus-ansibilus.yml:
       }
 ```
 
-A simple playbook like this can be used to deploy
-many instances of tor on many servers; here I assume the user has
-setup their ansible project according to the best practices
-directory-layout specified here:
+A simple playbook like this can be used to deploy many instances of
+tor on many servers. You can configure multiple tor instances using
+the host_vars file for each host.
 
-http://docs.ansible.com/playbooks_best_practices.html#directory-layout
-
-...and simply run a command like this: ansible-playbook -i production polytorus-ansibilus.ym
-
-This case presumes there to be an inventory file called "production"
-and an inventory group within called "tor-relays".
-
-You can configure multiple tor instances using the host_vars file
-for each host. Here's what an example host_vars file looks like (with
-rfc1918 ip addrs):
+Here's what an example host_vars file looks like (with rfc1918 ip addrs):
 
 host_vars/192.168.1.1:
 ```yml
@@ -208,12 +222,12 @@ In the above example playbook, all the role variables get applied to
 all tor instances. If you want to control the role variables for a
 specific host then you must use that host's host_vars file.
 
-Note: when this role is used in "multi-tor process mode"... meaning that the
-proc_instances variable is defined... then the torrc template will set
+Note: when this role is used in "multi-tor process mode"... meaning
+that if the proc_instances variable is defined... then the torrc template will set
 reasonable defaults for these torrc options: User, PidFile, Log and DataDirectory.
 
 This next example is NOT very practical because it can only be used
-with a host inventory with one host! It it were to be used with
+with a host inventory with one host! If it were to be used with
 multiple hosts then their torrc files would contain the same IP addresses.
 
 ```yml
@@ -247,8 +261,13 @@ multiple hosts then their torrc files would contain the same IP addresses.
 Tor configuration - torrc
 -------------------------
 
-torrc may be options be set from host_vars/group_vars and
+torrc may have options set from host_vars/group_vars and
 also set from role variables.
+
+The host_vars can set arbitrary torrc configuration options however
+the role variables currently support a small subset of the torrc
+options at the moment... it's a work in progress; refer to the
+templates/torrc for a more detailed overview.
 
 The host_vars variable names must begin with "tor_";
 Here's an example setting "Nickname":
@@ -259,9 +278,6 @@ tor_Nickname: [ "OnionRobot" ]
 
 The dictionary value is a list because in some cases you may want to
 specify multiple lines in the torrc that begin with the dictionary key.
-
-Various role variables control template output... this is a work in
-progress; refer to the templates/torrc for a more detailed overview.
 
 
 License
