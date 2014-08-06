@@ -3,6 +3,7 @@
 - name: gather state of python virtualenv tarball
   stat: path={{ tor_obfsproxy_home }}/{{ tor_virtenv_tarball }}
   register: virtenv_tarball_st
+  ignore_errors: True
 
 - name: ensure virtenv tarball downloaded
   get_url: >
@@ -61,10 +62,20 @@
   command: "{{ tor_obfsproxy_home }}/{{ tor_obfsproxy_virtenv_version }}/virtualenv.py {{ tor_obfsproxy_home }}/{{ tor_obfsproxy_virtenv }}"
   when: virtenv_st.stat.isdir is not defined
 
-- name: ensure obfsproxy dependency gmplib is installed
-  apt: pkg=libgmp-dev state=latest
-  sudo: yes
+- name: ensure obfsproxy dependencies are installed
+  apt: pkg="{{ item }}" state=latest
+  with_items:
+   - libgmp-dev
+   - build-essential
+   - python-dev
+   - git
 
 - name: ensure obfsproxy is pip installed in our python virtual env
-  shell: . {{ tor_obfsproxy_home }}/{{ tor_obfsproxy_virtenv }}/bin/activate && pip install {{ tor_obfsproxy_git_url }}
-
+  pip: >
+    name="{{ tor_obfsproxy_git_url }}#egg=obfsproxy"
+    virtualenv="{{ tor_obfsproxy_home }}/{{ tor_obfsproxy_virtenv }}"
+    executable="{{ tor_obfsproxy_home }}/{{ tor_obfsproxy_virtenv }}/bin/pip"
+    virtualenv_command="{{ tor_obfsproxy_home }}/{{ tor_obfsproxy_virtenv_version }}/virtualenv.py"
+    state=latest
+  environment:
+    PIP_DOWNLOAD_CACHE: "{{ tor_obfsproxy_home }}/.pip_download_cache" 
