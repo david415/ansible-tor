@@ -2,6 +2,10 @@
 
 ## install
 - include: install_tor.yml
+  when: tor_install_from_apt
+
+- include: install_tor2web_tor.yml
+  when: tor_tor2web
 
 - include: install_pip_obfsproxy.yml
   sudo: no

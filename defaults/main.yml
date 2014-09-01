@@ -13,3 +13,6 @@ tor_obfsproxy_virtenv: virtenv_obfsproxy
 tor_obfsproxy_virtenv_version: virtualenv-1.11.4
 tor_virtenv_tarball_url: https://pypi.python.org/packages/source/v/virtualenv/virtualenv-1.11.4.tar.gz
 tor_virtenv_tarball: virtualenv-1.11.4.tar.gz
+
+tor_install_from_apt: true
+tor_tor2web: false
