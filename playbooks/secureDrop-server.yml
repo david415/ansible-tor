@@ -46,3 +46,9 @@
         tor_SocksPort: 0,
         sudo: yes
       }
+    - { role: ansible-secureDrop-AppInterfaces,
+        headerFilePath: "{{ SecureDropHeaderImagePath }}",
+        AppGPGPublicKey: "{{ SecureDropAppGPGPublicKey }}",
+        AppGPGFingerprint: "{{ SecureDropAppGPGFingerprint }}",
+        sudo: yes
+      }
