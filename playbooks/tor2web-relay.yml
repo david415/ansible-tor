@@ -1,0 +1,12 @@
+---
+- hosts: tor-relays
+  user: human
+  connection: ssh
+  roles:
+    - { role: ansible-tor,
+        tor_distribution_release: "wheezy",
+        tor_ExitPolicy: "reject *:*",
+        tor_tor2web: yes,
+        tor_tor2web_build_dir: /home/human/tor2web-build,
+        sudo: yes
+      }

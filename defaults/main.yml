@@ -16,3 +16,4 @@ tor_virtenv_tarball: virtualenv-1.11.4.tar.gz
 
 tor_install_from_apt: true
 tor_tor2web: false
+tor_tor2web_build_dir: ""

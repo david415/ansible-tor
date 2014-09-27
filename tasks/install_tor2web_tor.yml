@@ -36,19 +36,16 @@
     state: latest
   with_items: ["deb.torproject.org-keyring", "fakeroot", "devscripts"]
 
-## setup temporary build directory
-- name: create tmp build directory
-  command: "mktemp -d"
-  register: tmp_install_dir
-
-- name: Display tmp_install_dir
-  debug: var=tmp_install_dir.stdout
-
 - name: apt-get build-dep tor
   command: "apt-get build-dep tor"
   sudo: yes
 
 - name: apt-get source tor
-  command: "chdir={{ tmp_install_dir.stdout }}/{{ autoconf_dir }} apt-get source tor"
+  command: "chdir={{ tor_tor2web_build_dir }} apt-get source tor"
+  sudo: yes
+
+- name: get new tor source dir
+  command: "chdir={{ tor_tor2web_build_dir }} ls -l tor*"
+  register: tor_dir
   sudo: yes
 
