@@ -3,6 +3,9 @@
 ## install
 - include: install_tor.yml
 
+- include: configure_obfs4proxy.yml
+  when: tor_obfs4proxy_enabled
+
 - include: install_pip_obfsproxy.yml
   sudo: no
   when: tor_obfsproxy_home is defined

@@ -32,6 +32,9 @@ ExitPolicy {{ tor_ExitPolicy }}
 {% if tor_ORPort is defined %}
 ORPort {{ tor_ORPort }}
 {% endif %}
+{% if tor_ExtORPort is defined %}
+ExtORPort {{ tor_ExtORPort }}
+{% endif %}
 {% if tor_UseBridges is defined %}
 UseBridges {{ tor_UseBridges }}
 {% endif %}

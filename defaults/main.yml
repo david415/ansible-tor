@@ -9,6 +9,10 @@ tor_Log: "notice file /var/log/tor/log"
 tor_hidden_services_parent_dir: /var/lib/tor/services
 tor_wait_for_hidden_services: no
 
+tor_obfs4proxy_enabled: False
+tor_obfs4proxy_release: sid
+debian_repo: http://ftp.us.debian.org/debian/
+
 tor_obfsproxy_git_url: obfsproxy
 tor_obfsproxy_virtenv: virtenv_obfsproxy
 

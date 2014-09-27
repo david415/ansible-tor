@@ -1,0 +1,8 @@
+Package: *
+Pin: release n={{ ansible_distribution_release }}
+Pin-Priority: 900
+
+Package: obfs4proxy
+Pin: release n={{ tor_obfs4proxy_release }}
+Pin-Priority: 910
+

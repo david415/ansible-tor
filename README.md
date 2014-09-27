@@ -56,6 +56,28 @@ start. It does so by waiting for the tor hidden service hostname file
 to appear.
 
 
+Example Tor obfs4 Bridge Playbook
+---------------------------------
+
+```yml
+---
+- hosts: tor-relays
+  user: human
+  connection: ssh
+  roles:
+    - { role: ansible-tor,
+        tor_distribution_release: "tor-experimental-0.2.5.x-wheezy",
+        tor_BridgeRelay: 1,
+        tor_PublishServerDescriptor: "bridge",
+        tor_ExtORPort: "auto",
+        tor_ORPort: 9001,
+        tor_ServerTransportPlugin: "obfs4 exec /usr/bin/obfs4proxy",
+        tor_ExitPolicy: "reject *:*",
+        tor_obfs4proxy_enabled: True,
+        sudo: yes
+      }
+```
+
 
 Example Tor Scramblesuit Bridge Playbook
 ----------------------------------------
