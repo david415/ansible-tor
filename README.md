@@ -31,7 +31,7 @@ Requirements
 ------------
 
 Works on Debian and Ubuntu.
-
+I've tried it... so I know. =-)
 
 
 Role Variables
@@ -65,6 +65,16 @@ Example Tor obfs4 Bridge Playbook
   user: human
   connection: ssh
   roles:
+    - { role: ansible-openssh-hardened,
+        backports_url: "http://ftp.de.debian.org/debian/",
+        backports_distribution_release: "wheezy-backports",
+        ssh_admin_ed25519pubkey_path: "/home/amnesia/.ssh/id_ed25519.pub",
+        sudo: yes
+      }
+    - { role: ansible-tlsdate,
+        remove_ntp: yes,
+        sudo: yes
+      }
     - { role: ansible-tor,
         tor_distribution_release: "tor-experimental-0.2.5.x-wheezy",
         tor_BridgeRelay: 1,
@@ -77,6 +87,18 @@ Example Tor obfs4 Bridge Playbook
         sudo: yes
       }
 ```
+
+Note that the `ansible-openssh-hardened` and `ansible-tlsdate` roles
+are not strictly necessary... however Tor does need accurate time
+and I think it is *much* better to use tldated instead of ntpd.
+See here:
+https://github.com/david415/ansible-tlsdate
+
+Furthermore it is also a good idea to have a hardened openssh-server
+configuration;  that supports the new ed25515 key exchange +
+the new polychacha1305 DJB-inspired crypto transport.
+See here:
+https://github.com/david415/ansible-openssh-hardened
 
 
 Example Tor Scramblesuit Bridge Playbook
@@ -108,6 +130,9 @@ obfsproxy available to pip (installs into a python virtualenv).
       }
 ```
 
+You should also feel free to apply iptables rulesets...
+however this also is not strictly necessary but at times might be a good idea.
+
 
 Example Tor Bananaphone Bridge Playbook
 ---------------------------------------
@@ -128,10 +153,6 @@ Read about the bananaphone pluggable transport for tor - http://bananaphone.io/
 
 - hosts: tor-bridges
   roles:
-    - { role: ansible-role-firewall,
-        firewall_allowed_tcp_ports: [ 22, 4703 ],
-        sudo: yes
-      }
     - { role: david415.ansible-tor,
         tor_distribution_release: "tor-experimental-0.2.5.x-wheezy",
         tor_BridgeRelay: 1,
