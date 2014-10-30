@@ -3,16 +3,17 @@
   user: human
   connection: ssh
   roles:
-    - { role: ansible-openssh-hardened,
-        backports_url: "http://ftp.de.debian.org/debian/",
-        backports_distribution_release: "wheezy-backports",
-        ssh_admin_ed25519pubkey_path: "/home/amnesia/.ssh/id_ed25519.pub",
-        sudo: yes
-      }
-    - { role: ansible-tlsdate,
-        remove_ntp: yes,
-        sudo: yes
-      }
+# XXX uber-paranoid openssh ansible role?
+#    - { role: ansible-openssh-hardened,
+#        backports_url: "http://ftp.de.debian.org/debian/",
+#        backports_distribution_release: "wheezy-backports",
+#        ssh_admin_ed25519pubkey_path: "/home/amnesia/.ssh/id_ed25519.pub",
+#        sudo: yes
+# XXX tlsdate?
+#    - { role: ansible-tlsdate,
+#        remove_ntp: yes,
+#        sudo: yes
+#      }
     - { role: ansible-tor,
         tor_distribution_release: "tor-experimental-0.2.5.x-wheezy",
         tor_BridgeRelay: 1,

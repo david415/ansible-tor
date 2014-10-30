@@ -65,16 +65,17 @@ Example Tor obfs4 Bridge Playbook
   user: human
   connection: ssh
   roles:
-    - { role: ansible-openssh-hardened,
-        backports_url: "http://ftp.de.debian.org/debian/",
-        backports_distribution_release: "wheezy-backports",
-        ssh_admin_ed25519pubkey_path: "/home/amnesia/.ssh/id_ed25519.pub",
-        sudo: yes
-      }
-    - { role: ansible-tlsdate,
-        remove_ntp: yes,
-        sudo: yes
-      }
+# XXX uber-paranoid openssh ansible role?
+#    - { role: ansible-openssh-hardened,
+#        backports_url: "http://ftp.de.debian.org/debian/",
+#        backports_distribution_release: "wheezy-backports",
+#        ssh_admin_ed25519pubkey_path: "/home/amnesia/.ssh/id_ed25519.pub",
+#        sudo: yes
+#      }
+#    - { role: ansible-tlsdate,
+#        remove_ntp: yes,
+#        sudo: yes
+#      }
     - { role: ansible-tor,
         tor_distribution_release: "tor-experimental-0.2.5.x-wheezy",
         tor_BridgeRelay: 1,
@@ -88,9 +89,10 @@ Example Tor obfs4 Bridge Playbook
       }
 ```
 
-Note that the `ansible-openssh-hardened` and `ansible-tlsdate` roles
-are not strictly necessary... however Tor does need accurate time
-and I think it is *much* better to use tldated instead of ntpd.
+
+Note that the `ansible-tlsdate` role is also not strictly necessary...
+however Tor does need accurate time and I think it is *much* better
+to use tldated instead of ntpd.
 See here:
 https://github.com/david415/ansible-tlsdate
 
