@@ -10,7 +10,7 @@
   when: ansible_distribution == 'Fedora'
 
 - name: Add Tor project repository
-  template: src=torproject.repo dest=/etc/yum.repos.d/torproject.repo owner=root group=root
+  template: src=torproject.yum.repo dest=/etc/yum.repos.d/torproject.repo owner=root group=root
 
 - name: Install Tor package
   yum: name=tor state=latest
