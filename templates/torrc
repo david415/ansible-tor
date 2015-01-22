@@ -5,13 +5,6 @@ User {{ tor_user }}
 PidFile {{ tor_instance_parent_dir }}/{{ item.name }}/tor.pid
 Log warn file {{ tor_instance_parent_dir }}/{{ item.name }}/log
 DataDirectory {{ tor_instance_parent_dir }}/{{ item.name }}/data
-{% for configkey, value in item.iteritems() %}
-{% if configkey|truncate(3, True) == "tor..." %}
-{% for element in item[configkey] %}
-{{ configkey|replace("tor_", "") }} {{ element }}
-{% endfor %}
-{% endif %}
-{% endfor %}
 {% else %}
 DataDirectory {{ tor_DataDirectory }}
 PidFile {{ tor_PidFile }}
