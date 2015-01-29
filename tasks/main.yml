@@ -1,7 +1,11 @@
 ---
 
 ## install
-- include: install_tor.yml
+- include: install_tor_apt.yml
+  when: ansible_pkg_mgr == 'apt'
+
+- include: install_tor_yum.yml
+  when: ansible_pkg_mgr == 'yum'
 
 - include: configure_obfs4proxy.yml
   when: tor_obfs4proxy_enabled

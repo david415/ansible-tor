@@ -24,7 +24,7 @@
   when: virtenv_tarball_sig_st.stat.exist is not defined
 
 - name: "check state of Donald Stufft's key in our gpg keyring"
-  command: gpg --fingerprint 3372DCFA
+  command: gpg --fingerprint 0x6e3cbce93372dcfa
   register: virtenv_key_state
   ignore_errors: True
 
