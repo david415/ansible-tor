@@ -48,11 +48,11 @@ DirBindAddress {{ tor_DirBindAddress }}
 {% endif %}
 
 {% if tor_RelayBandwidthRate is defined %}
-RelayBandwidthRate {{ RelayBandwidthRate }}
+RelayBandwidthRate {{ tor_RelayBandwidthRate }}
 {% endif %}
 
 {% if tor_RelayBandwidthBurst is defined %}
-RelayBandwidthBurst {{ RelayBandwidthBurst }}
+RelayBandwidthBurst {{ tor_RelayBandwidthBurst }}
 {% endif %}
 
 {% if tor_ControlPort is defined %}
