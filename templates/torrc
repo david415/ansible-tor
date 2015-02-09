@@ -11,6 +11,42 @@ PidFile {{ tor_PidFile }}
 RunAsDaemon {{ tor_RunAsDaemon }}
 Log {{ tor_Log }}
 {% endif %}
+
+{% if tor_SocksBindAddress is defined %}
+SocksBindAddress {{ tor_SocksBindAddress }}
+{% endif %}
+{% if tor_SocksPolicy is defined %}
+SocksPolicy {{ tor_SocksPolicy }}
+{% endif %}
+
+{% if tor_AllowUnverifiedNodes is defined %}
+AllowUnverifiedNodes {{ tor_AllowUnverifiedNodes }}
+{% endif %}
+
+{% if tor_DirServer is defined %}
+DirServer {{ tor_DirServer }}
+{% endif %}
+
+{% if tor_HiddenServiceExcludeNodes is defined %}
+HiddenServiceExcludeNodes {{ tor_HiddenServiceExcludeNodes }}
+{% endif %}
+
+{% if tor_HiddenServiceNodes is defined %}
+HiddenServiceNodes {{ tor_HiddenServiceNodes }}
+{% endif %}
+
+{% if tor_ORBindAddress is defined %}
+ORBindAddress {{ tor_ORBindAddress }}
+{% endif %}
+
+{% if tor_DirPort is defined %}
+DirPort {{ tor_DirPort }}
+{% endif %}
+
+{% if tor_DirBindAddress is defined %}
+DirBindAddress {{ tor_DirBindAddress }}
+{% endif %}
+
 {% if tor_Syslog is defined %}
 Log {{ tor_Syslog }} syslog
 {% endif %}
