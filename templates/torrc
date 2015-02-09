@@ -55,6 +55,10 @@ RelayBandwidthRate {{ RelayBandwidthRate }}
 RelayBandwidthBurst {{ RelayBandwidthBurst }}
 {% endif %}
 
+{% if tor_ControlPort is defined %}
+ControlPort {{ tor_ControlPort }}
+{% endif %}
+
 {% if tor_Syslog is defined %}
 Log {{ tor_Syslog }} syslog
 {% endif %}
