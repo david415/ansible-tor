@@ -47,6 +47,14 @@ DirPort {{ tor_DirPort }}
 DirBindAddress {{ tor_DirBindAddress }}
 {% endif %}
 
+{% if tor_RelayBandwidthRate is defined %}
+RelayBandwidthRate {{ RelayBandwidthRate }}
+{% endif %}
+
+{% if tor_RelayBandwidthBurst is defined %}
+RelayBandwidthBurst {{ RelayBandwidthBurst }}
+{% endif %}
+
 {% if tor_Syslog is defined %}
 Log {{ tor_Syslog }} syslog
 {% endif %}
