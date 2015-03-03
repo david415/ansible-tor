@@ -35,6 +35,10 @@ HiddenServiceExcludeNodes {{ tor_HiddenServiceExcludeNodes }}
 HiddenServiceNodes {{ tor_HiddenServiceNodes }}
 {% endif %}
 
+{% if tor_Address is defined %}
+Address {{ tor_Address }}
+{% endif %}
+
 {% if tor_ORBindAddress is defined %}
 ORBindAddress {{ tor_ORBindAddress }}
 {% endif %}
