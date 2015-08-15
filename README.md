@@ -1,5 +1,4 @@
-Ansible Tor
-===========
+# Ansible Tor
 
 This is an Ansible role for use with Tor - https://www.torproject.org/
 
@@ -27,8 +26,7 @@ tor-bananaphone-bridges, tor-hidden-tahoe-storage-nodes etc.
 
 For example configurations, checkout the inventory variables under [examples_host_vars/][].
 
-Requirements
-------------
+## Requirements
 
 Works on Debian and Ubuntu.
 I've tried it... so I know. =-)
@@ -38,7 +36,7 @@ FIXME: Also refer to Travis build.
 
 ## Example configurations
 
-#### Tor bridge using obfs4 pluggable transport
+### Tor bridge using obfs4 pluggable transport
 
 ```YAML
 tor_BridgeRelay: 1,
@@ -50,7 +48,7 @@ tor_ExitPolicy: "reject *:*",
 tor_obfs4proxy_enabled: True,
 ```
 
-#### Tor bridge using obfsproxy together with scramblesuit
+### Tor bridge using obfsproxy together with scramblesuit
 
 Configures a scramblesuit tor bridge using the
 latest obfsproxy available to pip (installs into a python virtualenv).
@@ -67,7 +65,7 @@ tor_ServerTransportListenAddr: "scramblesuit 0.0.0.0:4703",
 tor_ExitPolicy: "reject *:*",
 ```
 
-#### Tor bridge using bananaphone pluggable transport
+### Tor bridge using bananaphone pluggable transport
 
 Configures a tor bridge
 with an obfsproxy installed from my git repository so that
@@ -92,7 +90,7 @@ tor_ServerTransportListenAddr: "bananaphone 0.0.0.0:4703",
 tor_ExitPolicy: "reject *:*",
 ```
 
-#### Tor hidden service for SSH
+### Tor hidden service for SSH
 
 This demonstrates waiting for the hidden services
 to be created by awaiting the existence of the tor hidden service
@@ -167,8 +165,7 @@ Note: When this role is used in "multi-tor process mode" meaning
 that if the `tor_instances` variable is defined then the torrc template will set
 reasonable defaults for these torrc options: User, PidFile, Log and DataDirectory.
 
-Tor configuration - torrc
--------------------------
+## Tor configuration - torrc
 
 torrc may have options set from host_vars/group_vars and
 also set from role variables.
@@ -211,14 +208,12 @@ Additionally, there are a few roles which can help you in that regard:
 
 * [`debops.ferm`][debops.ferm]
 
-License
--------
+## License
 
 MIT
 
 
-Feature requests and bug-reports welcome!
------------------------------------------
+## Feature requests and bug-reports welcome!
 
 https://github.com/david415/ansible-tor/issues
 
