@@ -25,7 +25,7 @@ inventory file. I could have many other host groups defined in the
 inventory as well such as: tor-exit-relays, tor-bridges,
 tor-bananaphone-bridges, tor-hidden-tahoe-storage-nodes etc.
 
-For example configurations, checkout the inventory variables under [examples_host_vars/](/examples_host_vars/).
+For example configurations, checkout the inventory variables under [examples_host_vars/][].
 
 Requirements
 ------------
@@ -34,6 +34,63 @@ Works on Debian and Ubuntu.
 I've tried it... so I know. =-)
 
 FIXME: Also refer to Travis build.
+
+
+## Example configurations
+
+#### Tor bridge using obfs4 pluggable transport
+
+```YAML
+tor_BridgeRelay: 1,
+tor_PublishServerDescriptor: "bridge",
+tor_ExtORPort: "auto",
+tor_ORPort: 9001,
+tor_ServerTransportPlugin: "obfs4 exec /usr/bin/obfs4proxy",
+tor_ExitPolicy: "reject *:*",
+tor_obfs4proxy_enabled: True,
+```
+
+#### Tor bridge using obfsproxy together with scramblesuit
+
+Configures a scramblesuit tor bridge using the
+latest obfsproxy available to pip (installs into a python virtualenv).
+
+http://www.cs.kau.se/philwint/scramblesuit/
+
+```YAML
+tor_BridgeRelay: 1,
+tor_PublishServerDescriptor: "bridge",
+tor_obfsproxy_home: "/home/ansible",
+tor_ORPort: 9001,
+tor_ServerTransportPlugin: "scramblesuit exec {{ tor_obfsproxy_home }}/{{ tor_obfsproxy_virtenv }}/bin/obfsproxy --log-min-severity=info --log-file=/var/log/tor/obfsproxy.log managed",
+tor_ServerTransportListenAddr: "scramblesuit 0.0.0.0:4703",
+tor_ExitPolicy: "reject *:*",
+```
+
+#### Tor bridge using bananaphone pluggable transport
+
+Configures a tor bridge
+with an obfsproxy installed from my git repository so that
+the bananaphone pluggable transport is available (it has not been
+merged upstream).
+
+Bananaphone provides tor over markov chains!
+If you have sensitive or interesting documents then please consider
+operating a bananaphone bridge utilizing these text corpuses.
+Read about the bananaphone pluggable transport for tor.
+https://bananaphone.readthedocs.org/
+
+```YAML
+tor_BridgeRelay: 1,
+tor_PublishServerDescriptor: "bridge",
+tor_obfsproxy_home: "/home/ansible",
+tor_ORPort: 9001,
+tor_obfsproxy_git_url: "git+https://github.com/david415/obfsproxy.git",
+tor_ServerTransportPlugin: "bananaphone exec {{ tor_obfsproxy_home }}/{{ tor_obfsproxy_virtenv }}/bin/obfsproxy --log-min-severity=info --log-file=/var/log/tor/obfsproxy.log managed",
+tor_ServerTransportOptions: "bananaphone corpus=/usr/share/dict/words encodingSpec=words,sha1,4 modelName=markov order=1",
+tor_ServerTransportListenAddr: "bananaphone 0.0.0.0:4703",
+tor_ExitPolicy: "reject *:*",
+```
 
 
 
@@ -234,3 +291,4 @@ https://github.com/david415/ansible-tor/issues
 [david415.tahoe-lafs]: https://github.com/david415/ansible-tahoe-lafs
 
 [How to Run a Secure Tor Server]: https://trac.torproject.org/projects/tor/wiki/doc/OperationalSecurity
+[examples_host_vars/]: https://github.com/david415/ansible-tor
