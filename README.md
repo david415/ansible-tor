@@ -14,7 +14,7 @@ without obfsproxy.
 Here I assume the user has setup their ansible project directory according to the best practices
 directory-layout specified here:
 
-http://docs.ansible.com/playbooks_best_practices.html#directory-layout
+https://docs.ansible.com/playbooks_best_practices.html#directory-layout
 
 ...and simply run a command like this: `ansible-playbook -i production tor-relays.yml`
 
@@ -124,7 +124,7 @@ merged upstream).
 Bananaphone provides tor over markov chains!
 If you have sensitive or interesting documents then please consider
 operating a bananaphone bridge utilizing these text corpuses.
-Read about the bananaphone pluggable transport for tor - http://bananaphone.io/
+Read about the bananaphone pluggable transport for tor - https://bananaphone.readthedocs.org/
 
 
 ```yml
