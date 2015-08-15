@@ -10,12 +10,11 @@
 - include: configure_obfs4proxy.yml
   when: (ansible_pkg_mgr == 'apt' and tor_obfs4proxy_enabled)
 
-- include: install_pip_obfsproxy.yml
-  when: tor_obfsproxy_home is defined
+- include: install_obfsproxy.yml
+  when: tor_obfs4proxy_enabled
 
 
 ## configure
-
 - include: hidden_services.yml
   when: tor_hidden_services is defined
 
@@ -24,6 +23,7 @@
 
 - include: configure_tor_instance.yml
   when: proc_instances is defined
+
 
 ## wait for hidden services
 - include: wait_for_hidden_services.yml

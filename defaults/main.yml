@@ -17,8 +17,13 @@ tor_manage_apt_preferences: True
 
 tor_apt_preferences_priority: 910
 
+tor_install_python_virtualenv_manually: False
+tor_obfs4proxy_install_in_virtualenv: True
 tor_obfs4proxy_enabled: False
 tor_obfs4proxy_release: 'sid'
+tor_obfs4proxy_packages:
+  - 'obfsproxy'
+  # - 'obfs4proxy'
 debian_repo: 'http://httpredir.debian.org/debian/'
 
 tor_obfsproxy_git_url: 'obfsproxy'
