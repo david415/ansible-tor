@@ -1,3 +1,5 @@
+# {{ ansible_managed }}
+
 [tor]
 name=Tor repo
 enabled=1

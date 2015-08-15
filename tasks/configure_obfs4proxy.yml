@@ -1,18 +1,20 @@
 ---
 
 - name: setup tor apt repo
-  apt_repository:   
-    repo="deb {{ debian_repo }} {{ tor_obfs4proxy_release }} main"
-    state=present 
-    update_cache=yes
+  apt_repository:
+    repo: 'deb {{ debian_repo }} {{ tor_obfs4proxy_release }} main'
+    state: present
+    update_cache: yes
 
 - name: ensure APT preferences are configured
   template:
-    src=preferences
-    dest=/etc/apt/preferences
-    owner=root
-    group=root
-    mode=0644
+    src: 'preferences.j2'
+    dest: '/etc/apt/{{ "preferences" if tor_manage_apt_preferences else "preferences.d/pin_obfs4proxy.pref" }}'
+    owner: root
+    group: root
+    mode: 0644
 
 - name: ensure obfs4proxy is installed
-  apt: pkg=obfs4proxy state=latest
+  apt:
+    pkg: obfs4proxy
+    state: latest

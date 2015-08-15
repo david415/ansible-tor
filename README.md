@@ -16,9 +16,9 @@ directory-layout specified here:
 
 http://docs.ansible.com/playbooks_best_practices.html#directory-layout
 
-...and simply run a command like this: ansible-playbook -i production tor-relays.yml
+...and simply run a command like this: `ansible-playbook -i production tor-relays.yml`
 
-In this case I'm running the tor-relays.yml playbook against
+In this case I'm running the `tor-relays.yml` playbook against
 the "production" inventory file. This tor-relays playbook might
 specify a host group called tor-relays... which is defined in the
 inventory file. I could have many other host groups defined in the
@@ -40,12 +40,9 @@ Role Variables
 tor_distribution_release should be set to the desired distribution of
 the Tor Project's APT repo - http://deb.torproject.org/torproject.org
 
-Perhaps many debian users will want to specify "wheezy"... however if
-you intend to operate a tor bridge then you unless you probably want
-"tor-experimental-0.2.5.x-wheezy" so that you can have
-ServerTransportOptions in your torrc.
+Perhaps many debian users will want to specify "wheezy".
 
-tor_obfsproxy_home variable should set when you want to use obfsproxy
+tor_obfsproxy_home variable should be set when you want to use obfsproxy
 with your bridge configuration. Perhaps I should change this to be a
 boolean variable names tor_run_obfsproxy... and then set a reasonable
 default for the obfsproxy python virtual env directory?

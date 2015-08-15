@@ -1,22 +1,32 @@
 ---
 
-tor_instance_parent_dir: /etc/tor/instances
-tor_user: debian-tor
-tor_DataDirectory: /var/lib/tor
-tor_PidFile: /var/run/tor/tor.pid
+tor_instance_parent_dir: '/etc/tor/instances'
+tor_user: 'debian-tor'
+tor_DataDirectory: '/var/lib/tor'
+tor_PidFile: '/var/run/tor/tor.pid'
 tor_RunAsDaemon: 1
-tor_Log: "notice file /var/log/tor/log"
-tor_hidden_services_parent_dir: /var/lib/tor/services
+tor_Log: 'notice file /var/log/tor/log'
+tor_hidden_services_parent_dir: '/var/lib/tor/services'
 tor_wait_for_hidden_services: no
 
-tor_obfs4proxy_enabled: False
-tor_obfs4proxy_release: sid
-debian_repo: http://ftp.us.debian.org/debian/
+## If true, use apt preferences to ensure that even if other releases e.g.
+## testing of sid are enabled only certain packages are installed from testing or sid.
+## If false, you have to configure that yourself or by using another role like
+## https://github.com/debops/ansible-apt_preferences
+tor_manage_apt_preferences: True
 
-tor_obfsproxy_git_url: obfsproxy
-tor_obfsproxy_virtenv: virtenv_obfsproxy
+tor_apt_preferences_priority: 910
+
+tor_obfs4proxy_enabled: False
+tor_obfs4proxy_release: 'sid'
+debian_repo: 'http://httpredir.debian.org/debian/'
+
+tor_obfsproxy_git_url: 'obfsproxy'
+tor_obfsproxy_virtenv: 'virtenv_obfsproxy'
 
 # keep these up to date!
-tor_obfsproxy_virtenv_version: virtualenv-1.11.4
-tor_virtenv_tarball_url: https://pypi.python.org/packages/source/v/virtualenv/virtualenv-1.11.4.tar.gz
-tor_virtenv_tarball: virtualenv-1.11.4.tar.gz
+# https://pypi.python.org/pypi/virtualenv
+# https://github.com/pypa/virtualenv/releases
+tor_obfsproxy_virtenv_version: 'virtualenv-13.1.0'
+tor_virtenv_tarball: '{{ tor_obfsproxy_virtenv_version }}.tar.gz'
+tor_virtenv_tarball_url: 'https://pypi.python.org/packages/source/v/virtualenv/{{ tor_obfsproxy_virtenv_version }}.tar.gz'

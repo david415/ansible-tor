@@ -8,7 +8,7 @@
   when: ansible_pkg_mgr == 'yum'
 
 - include: configure_obfs4proxy.yml
-  when: tor_obfs4proxy_enabled
+  when: (ansible_pkg_mgr == 'apt' and tor_obfs4proxy_enabled)
 
 - include: install_pip_obfsproxy.yml
   sudo: no
