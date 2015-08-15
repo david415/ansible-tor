@@ -33,26 +33,6 @@ Requirements
 Works on Debian and Ubuntu.
 I've tried it... so I know. =-)
 
-
-Role Variables
---------------
-
-tor_distribution_release should be set to the desired distribution of
-the Tor Project's APT repo - http://deb.torproject.org/torproject.org
-
-Perhaps many debian users will want to specify "wheezy".
-
-tor_obfsproxy_home variable should be set when you want to use obfsproxy
-with your bridge configuration. Perhaps I should change this to be a
-boolean variable names tor_run_obfsproxy... and then set a reasonable
-default for the obfsproxy python virtual env directory?
-
-tor_wait_for_hidden_services can be set to yes if you would like the
-ansible-tor role to wait for the newly created tor hidden services to
-start. It does so by waiting for the tor hidden service hostname file
-to appear.
-
-
 Example Tor obfs4 Bridge Playbook
 ---------------------------------
 

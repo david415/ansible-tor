@@ -7,8 +7,18 @@ tor_PidFile: '/var/run/tor/tor.pid'
 tor_RunAsDaemon: 1
 tor_Log: 'notice file /var/log/tor/log'
 tor_hidden_services_parent_dir: '/var/lib/tor/services'
+
+
+## Can be set to yes if you would like this role to wait for the newly created
+## tor hidden services to start. It does so by waiting for the tor hidden
+## service hostname file to appear.
 tor_wait_for_hidden_services: no
 
+## Should be set to the desired distribution of
+## the Tor Project's APT repository.
+## See https://deb.torproject.org/torproject.org/dists/
+## The default (the release name of your distribution) should be fine in most cases.
+tor_distribution_release: '{{ ansible_distribution_release }}'
 
 ## If true, use apt preferences to ensure that even if other releases e.g.
 ## testing of sid are enabled only certain packages are installed from testing or sid.
@@ -33,6 +43,10 @@ tor_install_python_virtualenv_manually: False
 ## - pip+virtualenv: Install via pip in virtualenv.
 tor_obfsproxy_install_via: 'package_manager'
 
+## Variable should be set when you choice `tor_obfsproxy_install_via` == 'pip+virtualenv'
+## to specify where to create the virtualenv.
+tor_obfsproxy_home: '/var/lib/tor/pluggable_transports_obfsproxy'
+
 
 ## obfs4proxy -------------------------------------
 ## Install and enable obfs4proxy (written in Go).
@@ -45,7 +59,6 @@ tor_obfs4proxy_install_from: 'testing'
 
 ## Debian mirror to use.
 debian_repo: 'http://httpredir.debian.org/debian/'
-
 
 
 
