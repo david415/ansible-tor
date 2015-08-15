@@ -44,7 +44,7 @@ tor_PublishServerDescriptor: "bridge",
 tor_ExtORPort: "auto",
 tor_ORPort: 9001,
 tor_ServerTransportPlugin: "obfs4 exec /usr/bin/obfs4proxy",
-tor_ExitPolicy: "reject *:*",
+tor_ExitRelay: no
 tor_obfs4proxy_enabled: True,
 ```
 
@@ -62,7 +62,7 @@ tor_obfsproxy_home: "/home/ansible",
 tor_ORPort: 9001,
 tor_ServerTransportPlugin: "scramblesuit exec {{ tor_obfsproxy_home }}/{{ tor_obfsproxy_virtenv }}/bin/obfsproxy --log-min-severity=info --log-file=/var/log/tor/obfsproxy.log managed",
 tor_ServerTransportListenAddr: "scramblesuit 0.0.0.0:4703",
-tor_ExitPolicy: "reject *:*",
+tor_ExitRelay: no
 ```
 
 ### Tor bridge using bananaphone pluggable transport
@@ -87,7 +87,7 @@ tor_obfsproxy_git_url: "git+https://github.com/david415/obfsproxy.git",
 tor_ServerTransportPlugin: "bananaphone exec {{ tor_obfsproxy_home }}/{{ tor_obfsproxy_virtenv }}/bin/obfsproxy --log-min-severity=info --log-file=/var/log/tor/obfsproxy.log managed",
 tor_ServerTransportOptions: "bananaphone corpus=/usr/share/dict/words encodingSpec=words,sha1,4 modelName=markov order=1",
 tor_ServerTransportListenAddr: "bananaphone 0.0.0.0:4703",
-tor_ExitPolicy: "reject *:*",
+tor_ExitRelay: no
 ```
 
 ### Tor hidden service for SSH
@@ -108,17 +108,14 @@ Read about tor hidden services here:
 https://www.torproject.org/docs/tor-hidden-service.html.en
 
 ```YAML
-relay_hidden_services_parent_dir: "/var/lib/tor/services"
-relay_hidden_services:
-  - dir: "hidden_ssh",
-    ports:
-      - virtport: "22"
-        target: "localhost:22"
 
-tor_ExitPolicy: "reject *:*",
-tor_hidden_services: "{{ relay_hidden_services }}",
-tor_hidden_services_parent_dir: "{{ relay_hidden_services_parent_dir }}",
-tor_wait_for_hidden_services: yes,
+tor_ExitRelay: no
+tor_hidden_services:
+  - dir: 'hidden_ssh'
+    ports:
+      - virtport: '22'
+        target: 'localhost:22'
+tor_wait_for_hidden_services: yes
 ```
 
 ### Multi-tor-instance playbook
@@ -128,7 +125,7 @@ tor_wait_for_hidden_services: yes,
 ---
 - hosts: tor-relays
   vars:
-    tor_ExitPolicy: "reject *:*",
+    tor_ExitRelay: no
 
   roles:
     - { role: david415.ansible-tor,
@@ -194,7 +191,6 @@ Additionally, there are a few roles which can help you in that regard:
 * [`david415.tlsdate`][david415.tlsdate]
 
   Can provide accurate time information over a secure (side) channel.
-  FIXME: Add reference why this improves tor security.
 
 * [`david415.openssh-hardened`][david415.openssh-hardened] or [`hardening.ssh-hardening`][hardening.ssh-hardening] or [`debops.sshd`][debops.sshd]
 
