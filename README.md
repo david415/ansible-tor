@@ -92,67 +92,48 @@ tor_ServerTransportListenAddr: "bananaphone 0.0.0.0:4703",
 tor_ExitPolicy: "reject *:*",
 ```
 
+#### Tor hidden service for SSH
 
-
-This example playbook sets up tor relays with hidden service for
-ssh...
-
-This playbook demonstrates waiting for the hidden services
-to be created... by awaiting the existence of the tor hidden service
+This demonstrates waiting for the hidden services
+to be created by awaiting the existence of the tor hidden service
 hostname files. This happens when the role variable
-"tor_wait_for_hidden_services" is set to yes.
+`tor_wait_for_hidden_services` is set to yes.
 
 This feature could be useful when configuring other services that
-depend on knowing the hidden service's onion address... such as
+depend on knowing the hidden service's onion address such as
 my [`david415.tahoe-lafs`][david415.tahoe-lafs] role:
-
-
 
 Read about Tahoe-LAFS here:
 https://tahoe-lafs.org/trac/tahoe-lafs
+
 Read about tor hidden services here:
 https://www.torproject.org/docs/tor-hidden-service.html.en
 
+```YAML
+relay_hidden_services_parent_dir: "/var/lib/tor/services"
+relay_hidden_services:
+  - dir: "hidden_ssh",
+    ports:
+      - virtport: "22"
+        target: "localhost:22"
 
-```yml
----
-- hosts: tor-relays
-  user: ansible
-  connection: ssh
-  vars:
-    relay_hidden_services_parent_dir: "/var/lib/tor/services"
-    relay_hidden_services: [ { dir: "hidden_ssh",
-                               ports: [ { virtport: "22",
-                                 target: "localhost:22" } ] }
-    ]
-  roles:
-    - { role: ansible-role-firewall,
-        firewall_allowed_tcp_ports: [ 22, 9001 ],
-        sudo: yes
-      }
-    - { role: david415.ansible-tor,
-        tor_distribution_release: "wheezy",
-        tor_ExitPolicy: "reject *:*",
-        tor_hidden_services: "{{ relay_hidden_services }}",
-        tor_hidden_services_parent_dir: "{{ relay_hidden_services_parent_dir }}",
-        tor_wait_for_hidden_services: yes,
-        sudo: yes
-      }
+tor_ExitPolicy: "reject *:*",
+tor_hidden_services: "{{ relay_hidden_services }}",
+tor_hidden_services_parent_dir: "{{ relay_hidden_services_parent_dir }}",
+tor_wait_for_hidden_services: yes,
 ```
 
-
-Example Multi-tor-instance playbook
------------------------------------
+### Multi-tor-instance playbook
 
 
-polytorus-ansibilus.yml:
-```yml
+```YAML
 ---
 - hosts: tor-relays
+  vars:
+    tor_ExitPolicy: "reject *:*",
+
   roles:
     - { role: david415.ansible-tor,
-        tor_distribution_release: "wheezy",
-        tor_ExitPolicy: "reject *:*",
         sudo: yes
       }
 ```
@@ -161,67 +142,30 @@ A simple playbook like this can be used to deploy many instances of
 tor on many servers. You can configure multiple tor instances using
 the host_vars file for each host.
 
-Here's what an example host_vars file looks like (with rfc1918 ip addrs):
+Here's what an example host_vars file.
 
-host_vars/192.168.1.1:
-```yml
-tor_Nickname: [ "ScratchMaster" ]
-tor_instances: [ {
-name: "relay1",
-tor_ORPort: ["192.168.1.1:9002"],
-tor_SOCKSPort: ["8041"]
-},
-{
-name: "relay2",
-tor_ORPort: ["192.168.1.2:9002"],
-tor_SOCKSPort: ["8042"]
-},
-{
-name: "relay3",
-tor_ORPort: ["192.168.1.3:9002"],
-tor_SOCKSPort: ["8043"]
-}]
+host_vars/tor_relay1.example.com:
+```YAML
+tor_Nickname: "ScratchMaster"
+tor_instances:
+  - name: "relay1"
+    tor_ORPort: ["192.168.1.1:9002"]
+    tor_SOCKSPort: ["8041"]
+  - name: "relay2"
+    tor_ORPort: ["192.168.1.2:9002"]
+    tor_SOCKSPort: ["8042"]
+  - name: "relay3"
+    tor_ORPort: ["192.168.1.3:9002"]
+    tor_SOCKSPort: ["8043"]
 ```
 
 In the above example playbook, all the role variables get applied to
 all tor instances. If you want to control the role variables for a
 specific host then you must use that host's host_vars file.
 
-Note: when this role is used in "multi-tor process mode"... meaning
-that if the tor_instances variable is defined... then the torrc template will set
+Note: When this role is used in "multi-tor process mode" meaning
+that if the `tor_instances` variable is defined then the torrc template will set
 reasonable defaults for these torrc options: User, PidFile, Log and DataDirectory.
-
-This next example is NOT very practical because it can only be used
-with a host inventory with one host! If it were to be used with
-multiple hosts then their torrc files would contain the same IP addresses.
-
-```yml
----
-- hosts: tor-relays
-  roles:
-    - { role: david415.ansible-tor,
-        tor_distribution_release: "wheezy",
-        tor_ExitPolicy: "reject *:*",
-        tor_instance_parent_dir: "/etc/tor/instances",
-        tor_instances: [ {
-                          name: "relay1",
-                          tor_ORPort: ["192.168.1.1:9002"],
-                          tor_SocksPort: ["8041"]
-                        },
-                        {
-                          name: "relay2",
-                          tor_ORPort: ["192.168.1.2:9002"],
-                          tor_SocksPort: ["8042"]
-                        },
-                        {
-                          name: "relay3",
-                          tor_ORPort: ["192.168.1.3:9002"],
-                          tor_SocksPort: ["8043"]
-                        }],
-        sudo: yes
-      }
-```
-
 
 Tor configuration - torrc
 -------------------------
@@ -229,16 +173,14 @@ Tor configuration - torrc
 torrc may have options set from host_vars/group_vars and
 also set from role variables.
 
-The host_vars can set arbitrary torrc configuration options however
-the role variables currently support a small subset of the torrc
-options at the moment... it's a work in progress; refer to the
-templates/torrc for a more detailed overview.
+The host_vars can set arbitrary torrc configuration options.
+Refer to the templates/torrc.j2 for details.
 
-The host_vars variable names must begin with "tor_";
+The host_vars variable names must begin with "tor\_";
 Here's an example setting "Nickname":
 
-```yml
-tor_Nickname: [ "OnionRobot" ]
+```YAML
+tor_Nickname: "OnionRobot"
 ```
 
 The dictionary value is a list because in some cases you may want to
