@@ -9,6 +9,7 @@ tor_Log: 'notice file /var/log/tor/log'
 tor_hidden_services_parent_dir: '/var/lib/tor/services'
 tor_wait_for_hidden_services: no
 
+
 ## If true, use apt preferences to ensure that even if other releases e.g.
 ## testing of sid are enabled only certain packages are installed from testing or sid.
 ## If false, you have to configure that yourself or by using another role like
@@ -17,14 +18,36 @@ tor_manage_apt_preferences: True
 
 tor_apt_preferences_priority: 910
 
+
+## obfsproxy -------------------------------------
+## Install and enable obfsproxy (written in Python).
+tor_obfsproxy_enable: True
+
+## True: Install virtualenv from source/manually.
+## False (default): Install virtualenv via the means of your distribution.
 tor_install_python_virtualenv_manually: False
-tor_obfs4proxy_install_in_virtualenv: True
-tor_obfs4proxy_enabled: False
-tor_obfs4proxy_release: 'sid'
-tor_obfs4proxy_packages:
-  - 'obfsproxy'
-  # - 'obfs4proxy'
+
+## How to install obfsproxy, options:
+## - package_manager: By the means of your distribution.
+## - pip: Install via pip.
+## - pip+virtualenv: Install via pip in virtualenv.
+tor_obfsproxy_install_via: 'package_manager'
+
+
+## obfs4proxy -------------------------------------
+## Install and enable obfs4proxy (written in Go).
+tor_obfs4proxy_enable: True
+
+## https://packages.debian.org/search?keywords=obfs4proxy
+## Use Codenames like jessie, testing, sid or trusty.
+tor_obfs4proxy_install_from: 'testing'
+
+
+## Debian mirror to use.
 debian_repo: 'http://httpredir.debian.org/debian/'
+
+
+
 
 tor_obfsproxy_git_url: 'obfsproxy'
 tor_obfsproxy_virtenv: 'virtenv_obfsproxy'

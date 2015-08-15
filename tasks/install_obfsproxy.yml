@@ -1,25 +1,27 @@
 ---
 
-- include: install_python_virtualenv_manually.yml
-  when: (tor_obfs4proxy_install_in_virtualenv and
-         tor_install_python_virtualenv_manually)
-
 - name: Ensure virtualenv is installed
   apt:
     pkg: '{{ item }}'
     state: latest
   with_items:
     - 'python-virtualenv'
-  when: (ansible_pkg_mgr == 'apt' and tor_obfs4proxy_install_in_virtualenv and
+  when: (ansible_pkg_mgr == 'apt' and
          not tor_install_python_virtualenv_manually)
 
-- name: Ensure obfsproxy packages are installed
+- include: install_python_virtualenv_manually.yml
+  when: (tor_obfsproxy_install_via == 'pip+virtualenv' and
+         tor_install_python_virtualenv_manually)
+
+
+- name: Ensure obfsproxy is installed
   apt:
     pkg: '{{ item }}'
     state: latest
-  with_items: tor_obfs4proxy_packages
-  when: (ansible_pkg_mgr == 'apt' and not tor_obfs4proxy_install_in_virtualenv and
-         not tor_install_python_virtualenv_manually)
+  with_items:
+  - 'obfsproxy'
+  when: (ansible_pkg_mgr == 'apt' and
+         not tor_obfsproxy_install_via == 'package_manager')
 
-- include: install_pip_obfsproxy.yml
-  when: tor_obfs4proxy_install_in_virtualenv
+- include: install_obfsproxy_via_pip.yml
+  when: tor_obfsproxy_install_via in ['pip', 'pip+virtualenv']

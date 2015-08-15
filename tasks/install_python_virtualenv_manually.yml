@@ -1,5 +1,6 @@
 ---
 
+## Legacy, should not be required on current systems.
 - name: Ensure that Python virtualenv directory exists
   file:
     path: '{{ tor_obfsproxy_home }}'
@@ -81,13 +82,3 @@
    - build-essential
    - python-dev
    - git
-
-- name: ensure obfsproxy is pip installed in our python virtual env
-  pip:
-    name: '{{ tor_obfsproxy_git_url }}#egg=obfsproxy'
-    virtualenv: '{{ tor_obfsproxy_home }}/{{ tor_obfsproxy_virtenv }}'
-    executable: '{{ tor_obfsproxy_home }}/{{ tor_obfsproxy_virtenv }}/bin/pip'
-    virtualenv_command: '{{ tor_obfsproxy_home }}/{{ tor_obfsproxy_virtenv_version }}/virtualenv.py'
-    state: 'latest'
-  environment:
-    PIP_DOWNLOAD_CACHE: '{{ tor_obfsproxy_home }}/.pip_download_cache'

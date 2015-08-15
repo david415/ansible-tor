@@ -7,11 +7,11 @@
 - include: install_tor_yum.yml
   when: ansible_pkg_mgr == 'yum'
 
-- include: configure_obfs4proxy.yml
-  when: (ansible_pkg_mgr == 'apt' and tor_obfs4proxy_enabled)
-
 - include: install_obfsproxy.yml
-  when: tor_obfs4proxy_enabled
+  when: tor_obfsproxy_enable
+
+- include: install_obfs4proxy.yml
+  when: tor_obfs4proxy_enable
 
 
 ## configure

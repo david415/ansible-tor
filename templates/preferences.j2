@@ -1,4 +1,4 @@
-# ansible generated torrc
+# {{ ansible_managed }}
 
 {% if tor_manage_apt_preferences %}
 Package: *
@@ -6,11 +6,24 @@ Pin: release n={{ ansible_distribution_release }}
 Pin-Priority: 900
 {% endif %}
 
-Package: obfs4proxy
-Pin: release n={{ tor_obfs4proxy_release }}
-Pin-Priority: {{ tor_apt_preferences_priority }}
-
-Explanation: Ensure that packages are upgraded/installed from deb.torproject.org
+Explanation: Ensure that packages are upgraded/installed from deb.torproject.org.
 Package: *
 Pin: origin "deb.torproject.org"
+Pin-Priority: {{ tor_apt_preferences_priority }}
+
+{#
+Could be better managed by https://github.com/debops/ansible-apt_preferences like this:
+apt_preferences_list:
+  - package: 'obfsproxy'
+    backports: [ 'wheezy' ]
+    reason:  '0.1.x is the latest in wheezy. Backports provides 0.2.x.'
+#}
+
+Explanation: 0.1.x is the latest in wheezy. Backports provides 0.2.x.
+Package: obfsproxy
+Pin: release o=Debian Backports,n=wheezy-backports
+Pin-Priority: {{ tor_apt_preferences_priority }}
+
+Package: obfs4proxy
+Pin: release n={{ tor_obfs4proxy_install_from }}
 Pin-Priority: {{ tor_apt_preferences_priority }}

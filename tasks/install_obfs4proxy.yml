@@ -1,0 +1,16 @@
+---
+
+- name: Ensure apt repository for installing obfs4proxy exists
+  apt_repository:
+    repo: 'deb {{ debian_repo }} {{ tor_obfs4proxy_install_from }} main'
+    state: 'present'
+    update_cache: yes
+  when: tor_obfs4proxy_install_from is string and ansible_distribution in ['Debian']
+
+- name: Ensure obfs4proxy packages are installed
+  apt:
+    pkg: '{{ item }}'
+    state: latest
+  with_items:
+  - 'obfs4proxy'
+  when: (ansible_pkg_mgr == 'apt' and tor_obfs4proxy_enable)
