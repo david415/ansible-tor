@@ -45,6 +45,7 @@ tor_ExtORPort: "auto",
 tor_ORPort: 9001,
 tor_ServerTransportPlugin: "obfs4 exec /usr/bin/obfs4proxy",
 tor_ExitRelay: no
+tor_SocksPort: 0
 tor_obfs4proxy_enabled: True,
 ```
 
@@ -63,6 +64,7 @@ tor_ORPort: 9001,
 tor_ServerTransportPlugin: "scramblesuit exec {{ tor_obfsproxy_home }}/{{ tor_obfsproxy_virtenv }}/bin/obfsproxy --log-min-severity=info --log-file=/var/log/tor/obfsproxy.log managed",
 tor_ServerTransportListenAddr: "scramblesuit 0.0.0.0:4703",
 tor_ExitRelay: no
+tor_SocksPort: 0
 ```
 
 ### Tor bridge using bananaphone pluggable transport
@@ -88,6 +90,7 @@ tor_ServerTransportPlugin: "bananaphone exec {{ tor_obfsproxy_home }}/{{ tor_obf
 tor_ServerTransportOptions: "bananaphone corpus=/usr/share/dict/words encodingSpec=words,sha1,4 modelName=markov order=1",
 tor_ServerTransportListenAddr: "bananaphone 0.0.0.0:4703",
 tor_ExitRelay: no
+tor_SocksPort: 0
 ```
 
 ### Tor hidden service for SSH
@@ -110,6 +113,7 @@ https://www.torproject.org/docs/tor-hidden-service.html.en
 ```YAML
 
 tor_ExitRelay: no
+tor_SocksPort: 0
 tor_hidden_services:
   - dir: 'hidden_ssh'
     ports:
@@ -145,13 +149,13 @@ tor_Nickname: "ScratchMaster"
 tor_instances:
   - name: "relay1"
     tor_ORPort: ["192.168.1.1:9002"]
-    tor_SOCKSPort: ["8041"]
+    tor_SocksPort: ["8041"]
   - name: "relay2"
     tor_ORPort: ["192.168.1.2:9002"]
-    tor_SOCKSPort: ["8042"]
+    tor_SocksPort: ["8042"]
   - name: "relay3"
     tor_ORPort: ["192.168.1.3:9002"]
-    tor_SOCKSPort: ["8043"]
+    tor_SocksPort: ["8043"]
 ```
 
 In the above example playbook, all the role variables get applied to

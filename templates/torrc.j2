@@ -182,7 +182,9 @@ ExitRelay {{ '1' if tor_ExitRelay else '0' }}
 {% if tor_ExitPolicy is string %}
 ExitPolicy {{ tor_ExitPolicy }}
 {% endif %}
-{% if tor_MyFamily is defined %}
+{% if tor_MyFamily is defined and tor_MyFamily is iterable %}
+MyFamily {{ tor_MyFamily | join(',') }}
+{% elif tor_MyFamily is defined and tor_MyFamily is string %}
 MyFamily {{ tor_MyFamily }}
 {% endif %}
 {% if tor_Nickname is defined %}

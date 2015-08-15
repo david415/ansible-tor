@@ -28,3 +28,8 @@
 ## wait for hidden services
 - include: wait_for_hidden_services.yml
   when: tor_wait_for_hidden_services
+
+- name: Your Tor fingerprint. You might want to it it to the MyFamily configuration option.
+  debug:
+    var: tor_instance_fingerprint.stdout
+  when: tor_instance_fingerprint is defined and tor_instance_fingerprint.rc == 0
