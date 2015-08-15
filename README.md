@@ -243,7 +243,7 @@ Here's what an example host_vars file looks like (with rfc1918 ip addrs):
 host_vars/192.168.1.1:
 ```yml
 tor_Nickname: [ "ScratchMaster" ]
-proc_instances: [ {
+tor_instances: [ {
 name: "relay1",
 tor_ORPort: ["192.168.1.1:9002"],
 tor_SOCKSPort: ["8041"]
@@ -265,7 +265,7 @@ all tor instances. If you want to control the role variables for a
 specific host then you must use that host's host_vars file.
 
 Note: when this role is used in "multi-tor process mode"... meaning
-that if the proc_instances variable is defined... then the torrc template will set
+that if the tor_instances variable is defined... then the torrc template will set
 reasonable defaults for these torrc options: User, PidFile, Log and DataDirectory.
 
 This next example is NOT very practical because it can only be used
@@ -280,7 +280,7 @@ multiple hosts then their torrc files would contain the same IP addresses.
         tor_distribution_release: "wheezy",
         tor_ExitPolicy: "reject *:*",
         tor_instance_parent_dir: "/etc/tor/instances",
-        proc_instances: [ {
+        tor_instances: [ {
                           name: "relay1",
                           tor_ORPort: ["192.168.1.1:9002"],
                           tor_SocksPort: ["8041"]

@@ -11,21 +11,21 @@
     path: '{{ tor_instance_parent_dir }}/{{ item.name }}/data'
     state: 'directory'
     owner: '{{ tor_user }}'
-  with_items: proc_instances
+  with_items: tor_instances
 
 - name: ensure tor instances log file exist
   file:
     path: '{{ tor_instance_parent_dir }}/{{ item.name }}/log'
     state: 'touch'
     owner: '{{ tor_user }}'
-  with_items: proc_instances
+  with_items: tor_instances
 
 - name: ensure tor instances pid file exist
   file:
     path: '{{ tor_instance_parent_dir }}/{{ item.name }}/tor.pid'
     state: 'touch'
     owner: '{{ tor_user }}'
-  with_items: proc_instances
+  with_items: tor_instances
 
 - name: ensure instances template torrc
   template:
@@ -33,7 +33,7 @@
     dest: '{{ tor_instance_parent_dir }}/{{ item.name }}/torrc'
     owner: '{{ tor_user }}'
     mode: 0644
-  with_items: proc_instances
+  with_items: tor_instances
   register: instances_status
 
 - name: ensure tor instances are reloaded if its torrc changed
@@ -44,4 +44,4 @@
 
 - name: ensure tor instances are running
   shell: "kill -0 `cat {{ tor_instance_parent_dir }}/{{ item.name }}/tor.pid` || tor -f {{ tor_instance_parent_dir }}/{{ item.name }}/torrc"
-  with_items: proc_instances
+  with_items: tor_instances

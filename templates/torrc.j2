@@ -1,6 +1,6 @@
 # {{ ansible_managed }}
 
-{% if proc_instances is defined and item is defined %}
+{% if tor_instances is defined and item is defined %}
 RunAsDaemon 1
 User {{ tor_user }}
 PidFile {{ tor_instance_parent_dir }}/{{ item.name }}/tor.pid
