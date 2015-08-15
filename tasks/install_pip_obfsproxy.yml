@@ -1,5 +1,10 @@
 ---
 
+- name: Ensure that Python virtualenv directory exists
+  file:
+    path: '{{ tor_obfsproxy_home }}'
+    state: 'directory'
+
 - name: gather state of python virtualenv tarball
   stat:
     path: '{{ tor_obfsproxy_home }}/{{ tor_virtenv_tarball }}'
@@ -11,19 +16,20 @@
     url: '{{ tor_virtenv_tarball_url }}'
     dest: '{{ tor_obfsproxy_home }}'
     mode: 0600
-  when: virtenv_tarball_st.stat.exist is not defined
+  when: virtenv_tarball_st is defined and virtenv_tarball_st.stat.exist is not defined
 
 - name: gather state of virtualenv tarball gpg signature
   stat:
     path: '{{ tor_obfsproxy_home }}/{{ tor_virtenv_tarball }}'
   register: virtenv_tarball_sig_st
+  ignore_errors: True
 
 - name: ensure virtenv tarball gpg signature downloaded
   get_url:
     url: '{{ tor_virtenv_tarball_url }}.asc'
     dest: '{{ tor_obfsproxy_home }}'
     mode: 0600
-  when: virtenv_tarball_sig_st.stat.exist is not defined
+  when: virtenv_tarball_sig_st is defined and virtenv_tarball_sig_st.stat.exist is not defined
 
 - name: check state of Donald Stufft's key in our gpg keyring
   command: gpg --fingerprint 7C6B7C5D5E2B6356A926F04F6E3CBCE93372DCFA
@@ -37,11 +43,11 @@
   when: virtenv_key_state|failed
 
 - name: ensure virtualenv signing key is installed
-  command: gpg --import virtualenv-signing-key.pub
+  command: gpg --import {{ tor_obfsproxy_home }}/virtualenv-signing-key.pub
   when: virtenv_key_state|failed
 
 - name: gpg verify the python virtualenv tarball
-  command: gpg --verify {{ tor_virtenv_tarball }}.asc
+  command: gpg --verify {{ tor_obfsproxy_home }}/{{ tor_virtenv_tarball }}.asc
   register: virtenv_verified
 
 - name: assert that virtualenv tarball is verified
