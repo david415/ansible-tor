@@ -197,7 +197,8 @@ Additionally, there are a few roles which can help you in that regard:
 
 * [`david415.tlsdate`][david415.tlsdate]
 
-  Can provide your system with accurate time information over a secure (side) channel.
+  Can provide accurate time information over a secure (side) channel.
+  FIXME: Add reference why this improves tor security.
 
 * [`david415.openssh-hardened`][david415.openssh-hardened] or [`hardening.ssh-hardening`][hardening.ssh-hardening] or [`debops.sshd`][debops.sshd]
 
