@@ -18,7 +18,7 @@
     state: 'running'
 
 - name: Get Tor fingerprint
-  command: 'cut --fields=2 --delimiter=" " fingerprint {{ tor_DataDirectory }}/fingerprint'
+  command: 'cut --fields=2 --delimiter=" " {{ tor_DataDirectory }}/fingerprint'
   register: tor_instance_fingerprint
   when: tor_DataDirectory is string
   failed_when: False

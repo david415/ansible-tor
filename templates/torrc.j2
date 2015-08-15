@@ -199,6 +199,33 @@ ORListenAddress {{ tor_ORBindAddress }}
 {% if tor_PublishServerDescriptor is defined %}
 PublishServerDescriptor {{ tor_PublishServerDescriptor }}
 {% endif %}
+{% if tor_GeoIPFile is defined %}
+GeoIPFile {{ tor_GeoIPFile }}
+{% endif %}
+{% if tor_GeoIPv6File is defined %}
+GeoIPv6File {{ tor_GeoIPv6File }}
+{% endif %}
+{% if tor_CellStatistics is defined %}
+CellStatistics {{ '1' if tor_CellStatistics else '0' }}
+{% endif %}
+{% if tor_DirReqStatistics is defined %}
+DirReqStatistics {{ '1' if tor_DirReqStatistics else '0' }}
+{% endif %}
+{% if tor_EntryStatistics is defined %}
+EntryStatistics {{ '1' if tor_EntryStatistics else '0' }}
+{% endif %}
+{% if tor_ExitPortStatistics is defined %}
+ExitPortStatistics {{ '1' if tor_ExitPortStatistics else '0' }}
+{% endif %}
+{% if tor_ConnDirectionStatistics is defined %}
+ConnDirectionStatistics {{ '1' if tor_ConnDirectionStatistics else '0' }}
+{% endif %}
+{% if tor_HiddenServiceStatistics is defined %}
+HiddenServiceStatistics {{ '1' if tor_HiddenServiceStatistics else '0' }}
+{% endif %}
+{% if tor_ExtraInfoStatistics is defined %}
+ExtraInfoStatistics {{ '1' if tor_ExtraInfoStatistics else '0' }}
+{% endif %}
 ## )))
 
 ## Directory Server options (((
