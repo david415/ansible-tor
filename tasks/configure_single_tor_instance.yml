@@ -1,6 +1,6 @@
 ---
 
-- name: template torrc
+- name: Write tor configuration
   template:
     src: 'torrc.j2'
     dest: '/etc/tor/torrc'
@@ -12,7 +12,7 @@
 
 - meta: flush_handlers
 
-- name: ensure tor is running
+- name: Ensure tor is running
   service:
     name: 'tor'
     state: 'running'

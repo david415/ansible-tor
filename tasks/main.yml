@@ -19,10 +19,10 @@
   when: tor_hidden_services is defined
 
 - include: configure_single_tor_instance.yml
-  when: tor_instances is not defined
+  when: tor_instances is not iterable
 
-- include: configure_tor_instance.yml
-  when: tor_instances is defined
+- include: configure_multiple_tor_instances.yml
+  when: tor_instances is iterable
 
 
 ## wait for hidden services

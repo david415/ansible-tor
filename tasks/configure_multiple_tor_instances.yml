@@ -1,33 +1,33 @@
 ---
 
-- name: ensure tor instance parent dir exists
+- name: Ensure tor instance parent dir exists
   file:
     path: '{{ tor_instance_parent_dir }}'
     state: 'directory'
     owner: '{{ tor_user }}'
 
-- name: ensure tor instances data dir exist
+- name: Ensure tor instances data dir exist
   file:
     path: '{{ tor_instance_parent_dir }}/{{ item.name }}/data'
     state: 'directory'
     owner: '{{ tor_user }}'
   with_items: tor_instances
 
-- name: ensure tor instances log file exist
+- name: Ensure tor instances log file exist
   file:
     path: '{{ tor_instance_parent_dir }}/{{ item.name }}/log'
     state: 'touch'
     owner: '{{ tor_user }}'
   with_items: tor_instances
 
-- name: ensure tor instances pid file exist
+- name: Ensure tor instances pid file exist
   file:
     path: '{{ tor_instance_parent_dir }}/{{ item.name }}/tor.pid'
     state: 'touch'
     owner: '{{ tor_user }}'
   with_items: tor_instances
 
-- name: ensure instances template torrc
+- name: Ensure instances template torrc
   template:
     src: 'torrc.j2'
     dest: '{{ tor_instance_parent_dir }}/{{ item.name }}/torrc'
@@ -36,12 +36,12 @@
   with_items: tor_instances
   register: instances_status
 
-- name: ensure tor instances are reloaded if its torrc changed
+- name: Ensure tor instances are reloaded if its torrc changed
   shell: "kill -HUP `cat {{ tor_instance_parent_dir }}/{{ item.item.name }}/tor.pid`"
   ignore_errors: yes
   with_items: instances_status.results
   when: item.changed == True
 
-- name: ensure tor instances are running
+- name: Write tor configuration for instance
   shell: "kill -0 `cat {{ tor_instance_parent_dir }}/{{ item.name }}/tor.pid` || tor -f {{ tor_instance_parent_dir }}/{{ item.name }}/torrc"
   with_items: tor_instances
