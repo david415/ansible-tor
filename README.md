@@ -25,7 +25,7 @@ inventory file. I could have many other host groups defined in the
 inventory as well such as: tor-exit-relays, tor-bridges,
 tor-bananaphone-bridges, tor-hidden-tahoe-storage-nodes etc.
 
-
+For example configurations, checkout the inventory variables under [examples_host_vars/](/examples_host_vars/).
 
 Requirements
 ------------
@@ -33,123 +33,8 @@ Requirements
 Works on Debian and Ubuntu.
 I've tried it... so I know. =-)
 
-Example Tor obfs4 Bridge Playbook
----------------------------------
+FIXME: Also refer to Travis build.
 
-```yml
----
-- hosts: tor-relays
-  user: human
-  connection: ssh
-  roles:
-# XXX uber-paranoid openssh ansible role?
-#    - { role: ansible-openssh-hardened,
-#        backports_url: "http://ftp.de.debian.org/debian/",
-#        backports_distribution_release: "wheezy-backports",
-#        ssh_admin_ed25519pubkey_path: "/home/amnesia/.ssh/id_ed25519.pub",
-#        sudo: yes
-#      }
-#    - { role: ansible-tlsdate,
-#        remove_ntp: yes,
-#        sudo: yes
-#      }
-    - { role: ansible-tor,
-        tor_distribution_release: "tor-experimental-0.2.5.x-wheezy",
-        tor_BridgeRelay: 1,
-        tor_PublishServerDescriptor: "bridge",
-        tor_ExtORPort: "auto",
-        tor_ORPort: 9001,
-        tor_ServerTransportPlugin: "obfs4 exec /usr/bin/obfs4proxy",
-        tor_ExitPolicy: "reject *:*",
-        tor_obfs4proxy_enabled: True,
-        sudo: yes
-      }
-```
-
-
-Note that the `ansible-tlsdate` role is also not strictly necessary...
-however Tor does need accurate time and I think it is *much* better
-to use tldated instead of ntpd.
-See here:
-https://github.com/david415/ansible-tlsdate
-
-Furthermore it is also a good idea to have a hardened openssh-server
-configuration;  that supports the new ed25515 key exchange +
-the new polychacha1305 DJB-inspired crypto transport.
-See here:
-https://github.com/david415/ansible-openssh-hardened
-
-
-Example Tor Scramblesuit Bridge Playbook
-----------------------------------------
-
-This playbook installs and fully configures a scramblesuit
-( http://www.cs.kau.se/philwint/scramblesuit/ ) tor bridge using the latest
-obfsproxy available to pip (installs into a python virtualenv).
-
-```yml
----
-
-- hosts: tor-bridges
-  roles:
-    - { role: ansible-role-firewall,
-        firewall_allowed_tcp_ports: [ 22, 4703 ],
-        sudo: yes
-      }
-    - { role: david415.ansible-tor,
-        tor_distribution_release: "wheezy",
-        tor_BridgeRelay: 1,
-        tor_PublishServerDescriptor: "bridge",
-        tor_obfsproxy_home: "/home/ansible",
-        tor_ORPort: 9001,
-        tor_ServerTransportPlugin: "scramblesuit exec {{ tor_obfsproxy_home }}/{{ tor_obfsproxy_virtenv }}/bin/obfsproxy --log-min-severity=info --log-file=/var/log/tor/obfsproxy.log managed",
-        tor_ServerTransportListenAddr: "scramblesuit 0.0.0.0:4703",
-        tor_ExitPolicy: "reject *:*",
-        sudo: yes
-      }
-```
-
-You should also feel free to apply iptables rulesets...
-however this also is not strictly necessary but at times might be a good idea.
-
-
-Example Tor Bananaphone Bridge Playbook
----------------------------------------
-
-This playbook demonstrates configuring a tor bridge
-with an obfsproxy installed from my git repo so that
-the bananaphone pluggable transport is available (it has not been
-merged upstream).
-
-Bananaphone provides tor over markov chains!
-If you have sensitive or interesting documents then please consider
-operating a bananaphone bridge utilizing these text corpuses.
-Read about the bananaphone pluggable transport for tor - https://bananaphone.readthedocs.org/
-
-
-```yml
----
-
-- hosts: tor-bridges
-  roles:
-    - { role: david415.ansible-tor,
-        tor_distribution_release: "tor-experimental-0.2.5.x-wheezy",
-        tor_BridgeRelay: 1,
-        tor_PublishServerDescriptor: "bridge",
-        tor_obfsproxy_home: "/home/ansible",
-        tor_ORPort: 9001,
-        tor_obfsproxy_git_url: "git+https://github.com/david415/obfsproxy.git",
-        tor_ServerTransportPlugin: "bananaphone exec {{ tor_obfsproxy_home }}/{{ tor_obfsproxy_virtenv }}/bin/obfsproxy --log-min-severity=info --log-file=/var/log/tor/obfsproxy.log managed",
-        tor_ServerTransportOptions: "bananaphone corpus=/usr/share/dict/words encodingSpec=words,sha1,4 modelName=markov order=1",
-        tor_ServerTransportListenAddr: "bananaphone 0.0.0.0:4703",
-        tor_ExitPolicy: "reject *:*",
-        sudo: yes
-      }
-```
-
-
-Example Tor Relay Playbook
---------------------------
 
 
 This example playbook sets up tor relays with hidden service for
@@ -162,8 +47,9 @@ hostname files. This happens when the role variable
 
 This feature could be useful when configuring other services that
 depend on knowing the hidden service's onion address... such as
-my ansible-tahoe-lafs role:
-https://github.com/david415/ansible-tahoe-lafs
+my [`david415.tahoe-lafs`][david415.tahoe-lafs] role:
+
+
 
 Read about Tahoe-LAFS here:
 https://tahoe-lafs.org/trac/tahoe-lafs
@@ -301,6 +187,29 @@ tor_Nickname: [ "OnionRobot" ]
 The dictionary value is a list because in some cases you may want to
 specify multiple lines in the torrc that begin with the dictionary key.
 
+## Operational security
+
+When you run an Tor relay, please secure your server and administration system as good as possible.
+
+Be sure to read thought the wiki Artikel [how to Run a Secure Tor Server][].
+
+Additionally, there are a few roles which can help you in that regard:
+
+* [`david415.tlsdate`][david415.tlsdate]
+
+  Can provide your system with accurate time information over a secure (side) channel.
+
+* [`david415.openssh-hardened`][david415.openssh-hardened] or [`hardening.ssh-hardening`][hardening.ssh-hardening] or [`debops.sshd`][debops.sshd]
+
+  Furthermore it is also a good idea to have a hardened openssh-server
+  setup that supports the new ed25515 key exchange and
+  the new polychacha1305 DJB-inspired crypto transport.
+
+* [`hardening.os-hardening`][hardening.os-hardening]
+
+* [`ypid.apparmor`][ypid.apparmor]
+
+* [`debops.ferm`][debops.ferm]
 
 License
 -------
@@ -313,3 +222,14 @@ Feature requests and bug-reports welcome!
 
 https://github.com/david415/ansible-tor/issues
 
+
+[david415.tlsdate]: https://github.com/david415/ansible-tlsdate
+[david415.openssh-hardened]: https://github.com/david415/ansible-openssh-hardened
+[hardening.ssh-hardening]: https://github.com/hardening-io/ansible-ssh-hardening
+[debops.sshd]: https://github.com/debops/ansible-sshd
+[hardening.os-hardening]: https://github.com/hardening-io/ansible-os-hardening
+[ypid.apparmor]: https://github.com/ypid/ansible-apparmor
+[debops.ferm]: https://github.com/debops/ansible-ferm
+[david415.tahoe-lafs]: https://github.com/david415/ansible-tahoe-lafs
+
+[How to Run a Secure Tor Server]: https://trac.torproject.org/projects/tor/wiki/doc/OperationalSecurity

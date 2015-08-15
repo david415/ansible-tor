@@ -1,0 +1,22 @@
+---
+
+# This playbook demonstrates configuring a tor bridge
+# with an obfsproxy installed from my git repository so that
+# the bananaphone pluggable transport is available (it has not been
+# merged upstream).
+
+# Bananaphone provides tor over markov chains!
+# If you have sensitive or interesting documents then please consider
+# operating a bananaphone bridge utilizing these text corpuses.
+# Read about the bananaphone pluggable transport for tor.
+# https://bananaphone.readthedocs.org/
+
+tor_BridgeRelay: 1,
+tor_PublishServerDescriptor: "bridge",
+tor_obfsproxy_home: "/home/ansible",
+tor_ORPort: 9001,
+tor_obfsproxy_git_url: "git+https://github.com/david415/obfsproxy.git",
+tor_ServerTransportPlugin: "bananaphone exec {{ tor_obfsproxy_home }}/{{ tor_obfsproxy_virtenv }}/bin/obfsproxy --log-min-severity=info --log-file=/var/log/tor/obfsproxy.log managed",
+tor_ServerTransportOptions: "bananaphone corpus=/usr/share/dict/words encodingSpec=words,sha1,4 modelName=markov order=1",
+tor_ServerTransportListenAddr: "bananaphone 0.0.0.0:4703",
+tor_ExitPolicy: "reject *:*",
