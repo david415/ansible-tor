@@ -37,15 +37,15 @@ FIXME: Also refer to Travis build.
 ### Tor bridge using obfs4 pluggable transport
 
 ```YAML
-tor_BridgeRelay: 1,
-tor_PublishServerDescriptor: "bridge",
-tor_ExtORPort: "auto",
-tor_ORPort: 9001,
-tor_ServerTransportPlugin: "obfs4 exec /usr/bin/obfs4proxy",
+tor_BridgeRelay: 1
+tor_PublishServerDescriptor: "bridge"
+tor_ExtORPort: "auto"
+tor_ORPort: 9001
+tor_ServerTransportPlugin: "obfs4 exec /usr/bin/obfs4proxy"
 tor_ExitRelay: no
 tor_ExitPolicy: 'reject *:*'
 tor_SocksPort: 0
-tor_obfs4proxy_enabled: True,
+tor_obfs4proxy_enabled: True
 ```
 
 ### Tor bridge using obfsproxy together with scramblesuit
@@ -56,12 +56,12 @@ latest obfsproxy available to pip (installs into a python virtualenv).
 http://www.cs.kau.se/philwint/scramblesuit/
 
 ```YAML
-tor_BridgeRelay: 1,
-tor_PublishServerDescriptor: "bridge",
-tor_obfsproxy_home: "/home/ansible",
-tor_ORPort: 9001,
-tor_ServerTransportPlugin: "scramblesuit exec {{ tor_obfsproxy_home }}/{{ tor_obfsproxy_virtenv }}/bin/obfsproxy --log-min-severity=info --log-file=/var/log/tor/obfsproxy.log managed",
-tor_ServerTransportListenAddr: "scramblesuit 0.0.0.0:4703",
+tor_BridgeRelay: 1
+tor_PublishServerDescriptor: "bridge"
+tor_obfsproxy_home: "/home/ansible"
+tor_ORPort: 9001
+tor_ServerTransportPlugin: "scramblesuit exec {{ tor_obfsproxy_home }}/{{ tor_obfsproxy_virtenv }}/bin/obfsproxy --log-min-severity=info --log-file=/var/log/tor/obfsproxy.log managed"
+tor_ServerTransportListenAddr: "scramblesuit 0.0.0.0:4703"
 tor_ExitRelay: no
 tor_ExitPolicy: 'reject *:*'
 tor_SocksPort: 0
@@ -81,14 +81,14 @@ Read about the bananaphone pluggable transport for tor.
 https://bananaphone.readthedocs.org/
 
 ```YAML
-tor_BridgeRelay: 1,
-tor_PublishServerDescriptor: "bridge",
-tor_obfsproxy_home: "/home/ansible",
-tor_ORPort: 9001,
-tor_obfsproxy_git_url: "git+https://github.com/david415/obfsproxy.git",
-tor_ServerTransportPlugin: "bananaphone exec {{ tor_obfsproxy_home }}/{{ tor_obfsproxy_virtenv }}/bin/obfsproxy --log-min-severity=info --log-file=/var/log/tor/obfsproxy.log managed",
-tor_ServerTransportOptions: "bananaphone corpus=/usr/share/dict/words encodingSpec=words,sha1,4 modelName=markov order=1",
-tor_ServerTransportListenAddr: "bananaphone 0.0.0.0:4703",
+tor_BridgeRelay: 1
+tor_PublishServerDescriptor: "bridge"
+tor_obfsproxy_home: "/home/ansible"
+tor_ORPort: 9001
+tor_obfsproxy_git_url: "git+https://github.com/david415/obfsproxy.git"
+tor_ServerTransportPlugin: "bananaphone exec {{ tor_obfsproxy_home }}/{{ tor_obfsproxy_virtenv }}/bin/obfsproxy --log-min-severity=info --log-file=/var/log/tor/obfsproxy.log managed"
+tor_ServerTransportOptions: "bananaphone corpus=/usr/share/dict/words encodingSpec=words,sha1,4 modelName=markov order=1"
+tor_ServerTransportListenAddr: "bananaphone 0.0.0.0:4703"
 tor_ExitRelay: no
 tor_ExitPolicy: 'reject *:*'
 tor_SocksPort: 0
