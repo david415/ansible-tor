@@ -4,7 +4,7 @@
 {% if tor_RunAsDaemon_configure %}
 RunAsDaemon 1
 {% endif %}
-{% if tor_User_configure %}
+{% if tor_user_configure %}
 {%   if tor_User is defined or item is defined and item.tor_User is defined %}
 User {{ item.tor_User | default(tor_User) }}
 {%   endif %}
@@ -33,170 +33,173 @@ Log {{ tor_Syslog }} syslog
 {% endif %}
 
 ## General options (((
-{% if tor_BandwidthRate is defined %}
-BandwidthRate {{ tor_BandwidthRate }}
+{% if tor_BandwidthRate is defined or item is defined and item.tor_BandwidthRate is defined %}
+BandwidthRate {{ item.tor_BandwidthRate | default(tor_BandwidthRate) }}
 {% endif %}
-{% if tor_BandwidthBurst is defined %}
-BandwidthBurst {{ tor_BandwidthBurst }}
+{% if tor_BandwidthBurst is defined or item is defined and item.tor_BandwidthBurst is defined %}
+BandwidthBurst {{ item.tor_BandwidthBurst | default(tor_BandwidthBurst) }}
 {% endif %}
-{% if tor_MaxAdvertisedBandwidth is defined %}
-MaxAdvertisedBandwidth {{ tor_MaxAdvertisedBandwidth }}
+{% if tor_MaxAdvertisedBandwidth is defined or item is defined and item.tor_MaxAdvertisedBandwidth is defined %}
+MaxAdvertisedBandwidth {{ item.tor_MaxAdvertisedBandwidth | default(tor_MaxAdvertisedBandwidth) }}
 {% endif %}
-{% if tor_RelayBandwidthRate is defined %}
-RelayBandwidthRate {{ tor_RelayBandwidthRate }}
+{% if tor_RelayBandwidthRate is defined or item is defined and item.tor_RelayBandwidthRate is defined %}
+RelayBandwidthRate {{ item.tor_RelayBandwidthRate | default(tor_RelayBandwidthRate) }}
 {% endif %}
-{% if tor_RelayBandwidthBurst is defined %}
-RelayBandwidthBurst {{ tor_RelayBandwidthBurst }}
+{% if tor_RelayBandwidthBurst is defined or item is defined and item.tor_RelayBandwidthBurst is defined %}
+RelayBandwidthBurst {{ item.tor_RelayBandwidthBurst | default(tor_RelayBandwidthBurst) }}
 {% endif %}
-{% if tor_PerConnBWRate is defined %}
-PerConnBWRate {{ tor_PerConnBWRate }}
+{% if tor_PerConnBWRate is defined or item is defined and item.tor_PerConnBWRate is defined %}
+PerConnBWRate {{ item.tor_PerConnBWRate | default(tor_PerConnBWRate) }}
 {% endif %}
-{% if tor_PerConnBWBurst is defined %}
-PerConnBWBurst {{ tor_PerConnBWBurst }}
+{% if tor_PerConnBWBurst is defined or item is defined and item.tor_PerConnBWBurst is defined %}
+PerConnBWBurst {{ item.tor_PerConnBWBurst | default(tor_PerConnBWBurst) }}
 {% endif %}
-{% if tor_ClientTransportPlugin is defined %}
-ClientTransportPlugin {{ tor_ClientTransportPlugin }}
+{% if tor_ClientTransportPlugin is defined or item is defined and item.tor_ClientTransportPlugin is defined %}
+ClientTransportPlugin {{ item.tor_ClientTransportPlugin | default(tor_ClientTransportPlugin) }}
 {% endif %}
-{% if tor_ServerTransportPlugin is defined %}
-ServerTransportPlugin {{ tor_ServerTransportPlugin }}
+{% if tor_ClientTransportPlugin is defined or item is defined and item.tor_ClientTransportPlugin is defined %}
+ClientTransportPlugin {{ item.tor_ClientTransportPlugin | default(tor_ClientTransportPlugin) }}
 {% endif %}
-{% if tor_ServerTransportListenAddr is defined %}
-ServerTransportListenAddr {{ tor_ServerTransportListenAddr }}
+{% if tor_ServerTransportPlugin is defined or item is defined and item.tor_ServerTransportPlugin is defined %}
+ServerTransportPlugin {{ item.tor_ServerTransportPlugin | default(tor_ServerTransportPlugin) }}
 {% endif %}
-{% if tor_ServerTransportOptions is defined %}
-ServerTransportOptions {{ tor_ServerTransportOptions }}
+{% if tor_ServerTransportListenAddr is defined or item is defined and item.tor_ServerTransportListenAddr is defined %}
+ServerTransportListenAddr {{ item.tor_ServerTransportListenAddr | default(tor_ServerTransportListenAddr) }}
 {% endif %}
-{% if tor_ExtORPort is defined %}
-ExtORPort {{ tor_ExtORPort }}
+{% if tor_ServerTransportOptions is defined or item is defined and item.tor_ServerTransportOptions is defined %}
+ServerTransportOptions {{ item.tor_ServerTransportOptions | default(tor_ServerTransportOptions) }}
 {% endif %}
-{% if tor_ExtORPortCookieAuthFile is defined %}
-ExtORPortCookieAuthFile {{ tor_ExtORPortCookieAuthFile }}
+{% if tor_ExtORPort is defined or item is defined and item.tor_ExtORPort is defined %}
+ExtORPort {{ item.tor_ExtORPort | default(tor_ExtORPort) }}
 {% endif %}
-{% if tor_ExtORPortCookieAuthFileGroupReadable is defined %}
-ExtORPortCookieAuthFileGroupReadable {{ tor_ExtORPortCookieAuthFileGroupReadable }}
+{% if tor_ExtORPortCookieAuthFile is defined or item is defined and item.tor_ExtORPortCookieAuthFile is defined %}
+ExtORPortCookieAuthFile {{ item.tor_ExtORPortCookieAuthFile | default(tor_ExtORPortCookieAuthFile) }}
 {% endif %}
-{% if tor_ConnLimit is defined %}
-ConnLimit {{ tor_ConnLimit }}
+{% if tor_ExtORPortCookieAuthFileGroupReadable is defined or item is defined and item.tor_ExtORPortCookieAuthFileGroupReadable is defined %}
+ExtORPortCookieAuthFileGroupReadable {{ item.tor_ExtORPortCookieAuthFileGroupReadable | default(tor_ExtORPortCookieAuthFileGroupReadable) }}
 {% endif %}
-{% if tor_DisableNetwork is defined %}
-DisableNetwork {{ tor_DisableNetwork }}
+{% if tor_ConnLimit is defined or item is defined and item.tor_ConnLimit is defined %}
+ConnLimit {{ item.tor_ConnLimit | default(tor_ConnLimit) }}
 {% endif %}
-{% if tor_ConstrainedSockets is defined %}
-ConstrainedSockets {{ tor_ConstrainedSockets }}
+{% if tor_DisableNetwork is defined or item is defined and item.tor_DisableNetwork is defined %}
+DisableNetwork {{ item.tor_DisableNetwork | default(tor_DisableNetwork) }}
 {% endif %}
-{% if tor_ConstrainedSockSize is defined %}
-ConstrainedSockSize {{ tor_ConstrainedSockSize }}
+{% if tor_ConstrainedSockets is defined or item is defined and item.tor_ConstrainedSockets is defined %}
+ConstrainedSockets {{ item.tor_ConstrainedSockets | default(tor_ConstrainedSockets) }}
 {% endif %}
-{% if tor_ControlPort is defined %}
-ControlPort {{ tor_ControlPort }}
+{% if tor_ConstrainedSockSize is defined or item is defined and item.tor_ConstrainedSockSize is defined %}
+ConstrainedSockSize {{ item.tor_ConstrainedSockSize | default(tor_ConstrainedSockSize) }}
 {% endif %}
-{% if tor_ControlListenAddress is defined %}
-ControlListenAddress {{ tor_ControlListenAddress }}
+{% if tor_ControlPort is defined or item is defined and item.tor_ControlPort is defined %}
+ControlPort {{ item.tor_ControlPort | default(tor_ControlPort) }}
 {% endif %}
-{% if tor_ControlSocket is defined %}
-ControlSocket {{ tor_ControlSocket }}
+{% if tor_ControlListenAddress is defined or item is defined and item.tor_ControlListenAddress is defined %}
+ControlListenAddress {{ item.tor_ControlListenAddress | default(tor_ControlListenAddress) }}
 {% endif %}
-{% if tor_ControlSocketsGroupWritable is defined %}
-ControlSocketsGroupWritable {{ tor_ControlSocketsGroupWritable }}
+{% if tor_ControlSocket is defined or item is defined and item.tor_ControlSocket is defined %}
+ControlSocket {{ item.tor_ControlSocket | default(tor_ControlSocket) }}
 {% endif %}
-{% if tor_HashedControlPassword is defined %}
-HashedControlPassword {{ tor_HashedControlPassword }}
+{% if tor_ControlSocketsGroupWritable is defined or item is defined and item.tor_ControlSocketsGroupWritable is defined %}
+ControlSocketsGroupWritable {{ item.tor_ControlSocketsGroupWritable | default(tor_ControlSocketsGroupWritable) }}
 {% endif %}
-{% if tor_CookieAuthentication is defined %}
-CookieAuthentication {{ tor_CookieAuthentication }}
+{% if tor_HashedControlPassword is defined or item is defined and item.tor_HashedControlPassword is defined %}
+HashedControlPassword {{ item.tor_HashedControlPassword | default(tor_HashedControlPassword) }}
 {% endif %}
-{% if tor_CookieAuthFile is defined %}
-CookieAuthFile {{ tor_CookieAuthFile }}
+{% if tor_CookieAuthentication is defined or item is defined and item.tor_CookieAuthentication is defined %}
+CookieAuthentication {{ item.tor_CookieAuthentication | default(tor_CookieAuthentication) }}
 {% endif %}
-{% if tor_CookieAuthFileGroupReadable is defined %}
-CookieAuthFileGroupReadable {{ tor_CookieAuthFileGroupReadable }}
+{% if tor_CookieAuthFile is defined or item is defined and item.tor_CookieAuthFile is defined %}
+CookieAuthFile {{ item.tor_CookieAuthFile | default(tor_CookieAuthFile) }}
 {% endif %}
-{% if tor_ControlPortWriteToFile is defined %}
-ControlPortWriteToFile {{ tor_ControlPortWriteToFile }}
+{% if tor_CookieAuthFileGroupReadable is defined or item is defined and item.tor_CookieAuthFileGroupReadable is defined %}
+CookieAuthFileGroupReadable {{ item.tor_CookieAuthFileGroupReadable | default(tor_CookieAuthFileGroupReadable) }}
 {% endif %}
-{% if tor_ControlPortFileGroupReadable is defined %}
-ControlPortFileGroupReadable {{ tor_ControlPortFileGroupReadable }}
+{% if tor_ControlPortWriteToFile is defined or item is defined and item.tor_ControlPortWriteToFile is defined %}
+ControlPortWriteToFile {{ item.tor_ControlPortWriteToFile | default(tor_ControlPortWriteToFile) }}
 {% endif %}
-{% if tor_DirAuthorityFallbackRate is defined %}
-DirAuthorityFallbackRate {{ tor_DirAuthorityFallbackRate }}
+{% if tor_ControlPortFileGroupReadable is defined or item is defined and item.tor_ControlPortFileGroupReadable is defined %}
+ControlPortFileGroupReadable {{ item.tor_ControlPortFileGroupReadable | default(tor_ControlPortFileGroupReadable) }}
 {% endif %}
-{% if tor_DynamicDHGroups is defined %}
-DynamicDHGroups {{ '1' if tor_DynamicDHGroups else '0' }}
+{% if tor_DirAuthorityFallbackRate is defined or item is defined and item.tor_DirAuthorityFallbackRate is defined %}
+DirAuthorityFallbackRate {{ item.tor_DirAuthorityFallbackRate | default(tor_DirAuthorityFallbackRate) }}
 {% endif %}
-{% if tor_DisableAllSwap is defined %}
-DisableAllSwap {{ tor_DisableAllSwap }}
+{% if tor_DynamicDHGroups is defined or item is defined and item.tor_DynamicDHGroups is defined %}
+DynamicDHGroups {{ item.tor_DynamicDHGroups | default(tor_DynamicDHGroups) }}
 {% endif %}
-{% if tor_HTTPProxy is defined %}
-HTTPProxy {{ tor_HTTPProxy }}
+{% if tor_DisableAllSwap is defined or item is defined and item.tor_DisableAllSwap is defined %}
+DisableAllSwap {{ item.tor_DisableAllSwap | default(tor_DisableAllSwap) }}
 {% endif %}
-{% if tor_HTTPProxyAuthenticator is defined %}
-HTTPProxyAuthenticator {{ tor_HTTPProxyAuthenticator }}
+{% if tor_HTTPProxy is defined or item is defined and item.tor_HTTPProxy is defined %}
+HTTPProxy {{ item.tor_HTTPProxy | default(tor_HTTPProxy) }}
 {% endif %}
-{% if tor_HTTPSProxy is defined %}
-HTTPSProxy {{ tor_HTTPSProxy }}
+{% if tor_HTTPProxyAuthenticator is defined or item is defined and item.tor_HTTPProxyAuthenticator is defined %}
+HTTPProxyAuthenticator {{ item.tor_HTTPProxyAuthenticator | default(tor_HTTPProxyAuthenticator) }}
 {% endif %}
-{% if tor_HTTPSProxyAuthenticator is defined %}
-HTTPSProxyAuthenticator {{ tor_HTTPSProxyAuthenticator }}
+{% if tor_HTTPSProxy is defined or item is defined and item.tor_HTTPSProxy is defined %}
+HTTPSProxy {{ item.tor_HTTPSProxy | default(tor_HTTPSProxy) }}
 {% endif %}
-{% if tor_ProtocolWarnings is defined %}
-ProtocolWarnings {{ tor_ProtocolWarnings }}
+{% if tor_HTTPSProxyAuthenticator is defined or item is defined and item.tor_HTTPSProxyAuthenticator is defined %}
+HTTPSProxyAuthenticator {{ item.tor_HTTPSProxyAuthenticator | default(tor_HTTPSProxyAuthenticator) }}
 {% endif %}
-{% if tor_HardwareAccel is defined %}
-HardwareAccel {{ '1' if tor_HardwareAccel else '0' }}
+{% if tor_ProtocolWarnings is defined or item is defined and item.tor_ProtocolWarnings is defined %}
+ProtocolWarnings {{ item.tor_ProtocolWarnings | default(tor_ProtocolWarnings) }}
 {% endif %}
-{% if tor_AccelName is string %}
-AccelName {{ tor_AccelName }}
+{% if tor_HardwareAccel is defined or item is defined and item.tor_HardwareAccel is defined %}
+HardwareAccel {{ item.tor_HardwareAccel | default(tor_HardwareAccel) }}
 {% endif %}
-{% if tor_AvoidDiskWrites is defined %}
-AvoidDiskWrites {{ '1' if tor_AvoidDiskWrites else '0' }}
+{% if tor_AccelName is defined or item is defined and item.tor_AccelName is defined %}
+AccelName {{ item.tor_AccelName | default(tor_AccelName) }}
 {% endif %}
-{% if tor_SafeLogging is defined %}
-SafeLogging {{ tor_SafeLogging }}
+{% if tor_AvoidDiskWrites is defined or item is defined and item.tor_AvoidDiskWrites is defined %}
+AvoidDiskWrites {{ '1' if (item.tor_AvoidDiskWrites | default(tor_AvoidDiskWrites)) else '0' }}
+{% endif %}
+{% if tor_SafeLogging is defined or item is defined and item.tor_SafeLogging is defined %}
+SafeLogging {{ item.tor_SafeLogging | default(tor_SafeLogging) }}
 {% endif %}
 ## )))
 
 ## Client Options (((
-{% if tor_AllowInvalidNodes is defined %}
-AllowInvalidNodes {{ tor_AllowInvalidNodes }}
+{% if tor_AllowInvalidNodes is defined or item is defined and item.tor_AllowInvalidNodes is defined %}
+AllowInvalidNodes {{ item.tor_AllowInvalidNodes | default(tor_AllowInvalidNodes) }}
 {% endif %}
-{% if tor_Bridge is string %}
-Bridge {{ tor_Bridge }}
+{% if tor_Bridge is defined or item is defined and item.tor_Bridge is defined %}
+Bridge {{ item.tor_Bridge | default(tor_Bridge) }}
 {% endif %}
-{% if tor_UseBridges is defined %}
-UseBridges {{ '1' if tor_UseBridges else '0' }}
+{% if tor_UseBridges is defined or item is defined and item.tor_UseBridges is defined %}
+UseBridges {{ '1' if (item.tor_UseBridges | default(tor_UseBridges)) else '0' }}
 {% endif %}
-{% if tor_HidServAuth is string %}
-HidServAuth {{ tor_HidServAuth }}
+{% if tor_HidServAuth is defined or item is defined and item.tor_HidServAuth is defined %}
+HidServAuth {{ item.tor_HidServAuth | default(tor_HidServAuth) }}
 {% endif %}
-{% if tor_SocksPort is defined %}
-SocksPort {{ tor_SocksPort }}
+{% if tor_SocksPort is defined or item is defined and item.tor_SocksPort is defined %}
+SocksPort {{ item.tor_SocksPort | default(tor_SocksPort) }}
 {% endif %}
-{% if tor_SocksListenAddress is defined %}
-SocksListenAddress {{ tor_SocksListenAddress }}
+{% if tor_SocksListenAddress is defined or item is defined and item.tor_SocksListenAddress is defined %}
+SocksListenAddress {{ item.tor_SocksListenAddress | default(tor_SocksListenAddress) }}
 {% endif %}
-{% if tor_SocksPolicy is defined %}
-SocksPolicy {{ tor_SocksPolicy }}
+{% if tor_SocksPolicy is defined or item is defined and item.tor_SocksPolicy is defined %}
+SocksPolicy {{ item.tor_SocksPolicy | default(tor_SocksPolicy) }}
 {% endif %}
-{% if tor_ReachableAddresses is defined %}
-ReachableAddresses {{ tor_ReachableAddresses }}
+{% if tor_ReachableAddresses is defined or item is defined and item.tor_ReachableAddresses is defined %}
+ReachableAddresses {{ item.tor_ReachableAddresses | default(tor_ReachableAddresses) }}
 {% endif %}
 ## )))
 
 ## Server options (((
-{% if tor_Address is string %}
-Address {{ tor_Address }}
+{% if tor_Address is defined or item is defined and item.tor_Address is defined %}
+Address {{ item.tor_Address | default(tor_Address) }}
 {% endif %}
-{% if tor_BridgeRelay is defined %}
-BridgeRelay {{ '1' if tor_BridgeRelay else '0' }}
+{% if tor_BridgeRelay is defined or item is defined and item.tor_BridgeRelay is defined %}
+BridgeRelay {{ '1' if (item.tor_BridgeRelay | default(tor_BridgeRelay)) else '0' }}
 {% endif %}
 {% if tor_ContactInfo is string and not (item is defined and item.tor_ContactInfo is defined and item.tor_ContactInfo == False) %}
 ContactInfo {{ tor_ContactInfo }}
 {% endif %}
-{% if tor_ExitRelay is defined %}
-ExitRelay {{ '1' if tor_ExitRelay else '0' }}
+{% if tor_ExitRelay is defined or item is defined and item.tor_ExitRelay is defined %}
+ExitRelay {{ '1' if (item.tor_ExitRelay | default(tor_ExitRelay)) else '0' }}
 {% endif %}
-{% if tor_ExitPolicy is string %}
-ExitPolicy {{ tor_ExitPolicy }}
+{% if tor_ExitPolicy is defined or item is defined and item.tor_ExitPolicy is defined %}
+ExitPolicy {{ item.tor_ExitPolicy | default(tor_ExitPolicy) }}
 {% endif %}
 {% if tor_MyFamily is defined and tor_MyFamily is iterable and not (item is defined and item.tor_MyFamily is defined and item.tor_MyFamily == False) %}
 MyFamily {{ item.tor_MyFamily | default(tor_MyFamily) | join(',') }}
@@ -213,32 +216,32 @@ ORListenAddress {{ item.tor_ORListenAddress | default(tor_ORListenAddress) }}
 {% if tor_PublishServerDescriptor is defined or item is defined and item.tor_PublishServerDescriptor is defined %}
 PublishServerDescriptor {{ item.tor_PublishServerDescriptor | default(tor_PublishServerDescriptor) }}
 {% endif %}
-{% if tor_GeoIPFile is defined %}
-GeoIPFile {{ tor_GeoIPFile }}
+{% if tor_GeoIPFile is defined or item is defined and item.tor_GeoIPFile is defined %}
+GeoIPFile {{ item.tor_GeoIPFile | default(tor_GeoIPFile) }}
 {% endif %}
-{% if tor_GeoIPv6File is defined %}
-GeoIPv6File {{ tor_GeoIPv6File }}
+{% if tor_GeoIPv6File is defined or item is defined and item.tor_GeoIPv6File is defined %}
+GeoIPv6File {{ item.tor_GeoIPv6File | default(tor_GeoIPv6File) }}
 {% endif %}
-{% if tor_CellStatistics is defined %}
-CellStatistics {{ '1' if tor_CellStatistics else '0' }}
+{% if tor_CellStatistics is defined or item is defined and item.tor_CellStatistics is defined %}
+CellStatistics {{ '1' if (item.tor_CellStatistics | default(tor_CellStatistics)) else '0' }}
 {% endif %}
-{% if tor_DirReqStatistics is defined %}
-DirReqStatistics {{ '1' if tor_DirReqStatistics else '0' }}
+{% if tor_DirReqStatistics is defined or item is defined and item.tor_DirReqStatistics is defined %}
+DirReqStatistics {{ '1' if (item.tor_DirReqStatistics | default(tor_DirReqStatistics)) else '0' }}
 {% endif %}
-{% if tor_EntryStatistics is defined %}
-EntryStatistics {{ '1' if tor_EntryStatistics else '0' }}
+{% if tor_EntryStatistics is defined or item is defined and item.tor_EntryStatistics is defined %}
+EntryStatistics {{ '1' if (item.tor_EntryStatistics | default(tor_EntryStatistics)) else '0' }}
 {% endif %}
-{% if tor_ExitPortStatistics is defined %}
-ExitPortStatistics {{ '1' if tor_ExitPortStatistics else '0' }}
+{% if tor_ExitPortStatistics is defined or item is defined and item.tor_ExitPortStatistics is defined %}
+ExitPortStatistics {{ '1' if (item.tor_ExitPortStatistics | default(tor_ExitPortStatistics)) else '0' }}
 {% endif %}
-{% if tor_ConnDirectionStatistics is defined %}
-ConnDirectionStatistics {{ '1' if tor_ConnDirectionStatistics else '0' }}
+{% if tor_ConnDirectionStatistics is defined or item is defined and item.tor_ConnDirectionStatistics is defined %}
+ConnDirectionStatistics {{ '1' if (item.tor_ConnDirectionStatistics | default(tor_ConnDirectionStatistics)) else '0' }}
 {% endif %}
-{% if tor_HiddenServiceStatistics is defined %}
-HiddenServiceStatistics {{ '1' if tor_HiddenServiceStatistics else '0' }}
+{% if tor_HiddenServiceStatistics is defined or item is defined and item.tor_HiddenServiceStatistics is defined %}
+HiddenServiceStatistics {{ '1' if (item.tor_HiddenServiceStatistics | default(tor_HiddenServiceStatistics)) else '0' }}
 {% endif %}
-{% if tor_ExtraInfoStatistics is defined %}
-ExtraInfoStatistics {{ '1' if tor_ExtraInfoStatistics else '0' }}
+{% if tor_ExtraInfoStatistics is defined or item is defined and item.tor_ExtraInfoStatistics is defined %}
+ExtraInfoStatistics {{ '1' if (item.tor_ExtraInfoStatistics | default(tor_ExtraInfoStatistics)) else '0' }}
 {% endif %}
 ## )))
 
