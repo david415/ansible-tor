@@ -45,6 +45,7 @@ tor_ExtORPort: "auto",
 tor_ORPort: 9001,
 tor_ServerTransportPlugin: "obfs4 exec /usr/bin/obfs4proxy",
 tor_ExitRelay: no
+tor_ExitPolicy: 'reject *:*'
 tor_SocksPort: 0
 tor_obfs4proxy_enabled: True,
 ```
@@ -64,6 +65,7 @@ tor_ORPort: 9001,
 tor_ServerTransportPlugin: "scramblesuit exec {{ tor_obfsproxy_home }}/{{ tor_obfsproxy_virtenv }}/bin/obfsproxy --log-min-severity=info --log-file=/var/log/tor/obfsproxy.log managed",
 tor_ServerTransportListenAddr: "scramblesuit 0.0.0.0:4703",
 tor_ExitRelay: no
+tor_ExitPolicy: 'reject *:*'
 tor_SocksPort: 0
 ```
 
@@ -90,6 +92,7 @@ tor_ServerTransportPlugin: "bananaphone exec {{ tor_obfsproxy_home }}/{{ tor_obf
 tor_ServerTransportOptions: "bananaphone corpus=/usr/share/dict/words encodingSpec=words,sha1,4 modelName=markov order=1",
 tor_ServerTransportListenAddr: "bananaphone 0.0.0.0:4703",
 tor_ExitRelay: no
+tor_ExitPolicy: 'reject *:*'
 tor_SocksPort: 0
 ```
 
@@ -113,6 +116,7 @@ https://www.torproject.org/docs/tor-hidden-service.html.en
 ```YAML
 
 tor_ExitRelay: no
+tor_ExitPolicy: 'reject *:*'
 tor_SocksPort: 0
 tor_hidden_services:
   - dir: 'hidden_ssh'
@@ -130,6 +134,7 @@ tor_wait_for_hidden_services: yes
 - hosts: tor-relays
   vars:
     tor_ExitRelay: no
+    tor_ExitPolicy: 'reject *:*'
 
   roles:
     - { role: david415.ansible-tor,
@@ -165,6 +170,23 @@ specific host then you must use that host's host_vars file.
 Note: When this role is used in "multi-tor process mode" meaning
 that if the `tor_instances` variable is defined then the torrc template will set
 reasonable defaults for these torrc options: User, PidFile, Log and DataDirectory.
+
+### Running a Tor relay in a Docker container
+
+This Ansible role can also be used to create the tor configuration for a Tor instance which will be running in a Docker container. See the following example:
+
+```YAML
+tor_do_not_install_anything: yes
+tor_user_configure: False
+tor_PidFile_configure: False
+tor_RunAsDaemon_configure: False
+tor_Log_instances: True
+tor_Log: 'notice stdout'
+tor_ORPort: 993
+```
+
+This Docker Image has been successfully tested with this configuration:
+https://github.com/patrickod/docker-tor
 
 ## Tor configuration - torrc
 

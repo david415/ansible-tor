@@ -2,16 +2,16 @@
 
 ## install
 - include: install_tor_apt.yml
-  when: ansible_pkg_mgr == 'apt'
+  when: ansible_pkg_mgr == 'apt' and not tor_do_not_install_anything
 
 - include: install_tor_yum.yml
-  when: ansible_pkg_mgr == 'yum'
+  when: ansible_pkg_mgr == 'yum' and not tor_do_not_install_anything
 
 - include: install_obfsproxy.yml
-  when: tor_obfsproxy_enable
+  when: tor_obfsproxy_enable and not tor_do_not_install_anything
 
 - include: install_obfs4proxy.yml
-  when: tor_obfs4proxy_enable
+  when: tor_obfs4proxy_enable and not tor_do_not_install_anything
 
 
 ## configure

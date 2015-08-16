@@ -1,15 +1,31 @@
 # {{ ansible_managed }}
 
 {% if tor_instances is defined and item is defined %}
+{% if tor_RunAsDaemon_configure %}
 RunAsDaemon 1
-User {{ tor_User }}
+{% endif %}
+{% if tor_user_configure %}
+{%   if tor_User is defined or item is defined and item.tor_User is defined %}
+User {{ item.tor_User | default(tor_User) }}
+{%   endif %}
+{% endif %}
+{% if tor_PidFile_configure %}
 PidFile {{ tor_instance_parent_dir }}/{{ item.name }}/tor.pid
+{% endif %}
+{% if tor_Log_instances %}
+Log {{ tor_Log }}
+{% else %}
 Log warn file {{ tor_instance_parent_dir }}/{{ item.name }}/log
+{% endif %}
+{%   if tor_DataDirectory_instances %}
 DataDirectory {{ tor_instance_parent_dir }}/{{ item.name }}/data
+{%   endif %}
 {% else %}
 DataDirectory {{ tor_DataDirectory }}
 PidFile {{ tor_PidFile }}
+{% if tor_RunAsDaemon_configure %}
 RunAsDaemon {{ tor_RunAsDaemon }}
+{% endif %}
 Log {{ tor_Log }}
 {% endif %}
 {% if tor_Syslog is defined %}
@@ -173,7 +189,7 @@ Address {{ tor_Address }}
 {% if tor_BridgeRelay is defined %}
 BridgeRelay {{ '1' if tor_BridgeRelay else '0' }}
 {% endif %}
-{% if tor_ContactInfo is string %}
+{% if tor_ContactInfo is string and not (item is defined and item.tor_ContactInfo is defined and item.tor_ContactInfo == False) %}
 ContactInfo {{ tor_ContactInfo }}
 {% endif %}
 {% if tor_ExitRelay is defined %}
@@ -182,22 +198,20 @@ ExitRelay {{ '1' if tor_ExitRelay else '0' }}
 {% if tor_ExitPolicy is string %}
 ExitPolicy {{ tor_ExitPolicy }}
 {% endif %}
-{% if tor_MyFamily is defined and tor_MyFamily is iterable %}
-MyFamily {{ tor_MyFamily | join(',') }}
-{% elif tor_MyFamily is defined and tor_MyFamily is string %}
-MyFamily {{ tor_MyFamily }}
+{% if tor_MyFamily is defined and tor_MyFamily is iterable and not (item is defined and item.tor_MyFamily is defined and item.tor_MyFamily == False) %}
+MyFamily {{ item.tor_MyFamily | default(tor_MyFamily) | join(',') }}
 {% endif %}
-{% if tor_Nickname is defined %}
-Nickname {{ tor_Nickname }}
+{% if tor_Nickname is defined or item is defined and item.tor_Nickname is defined %}
+Nickname {{ item.tor_Nickname | default(tor_Nickname) }}
 {% endif %}
-{% if tor_ORPort is defined %}
-ORPort {{ tor_ORPort }}
+{% if tor_ORPort is defined or item is defined and item.tor_ORPort is defined %}
+ORPort {{ item.tor_ORPort | default(tor_ORPort) }}
 {% endif %}
-{% if tor_ORListenAddress is defined %}
-ORListenAddress {{ tor_ORBindAddress }}
+{% if tor_ORListenAddress is defined or item is defined and item.tor_ORListenAddress is defined %}
+ORListenAddress {{ item.tor_ORListenAddress | default(tor_ORListenAddress) }}
 {% endif %}
-{% if tor_PublishServerDescriptor is defined %}
-PublishServerDescriptor {{ tor_PublishServerDescriptor }}
+{% if tor_PublishServerDescriptor is defined or item is defined and item.tor_PublishServerDescriptor is defined %}
+PublishServerDescriptor {{ item.tor_PublishServerDescriptor | default(tor_PublishServerDescriptor) }}
 {% endif %}
 {% if tor_GeoIPFile is defined %}
 GeoIPFile {{ tor_GeoIPFile }}
@@ -229,17 +243,17 @@ ExtraInfoStatistics {{ '1' if tor_ExtraInfoStatistics else '0' }}
 ## )))
 
 ## Directory Server options (((
-{% if tor_DirPort is defined %}
-DirPort {{ tor_DirPort }}
+{% if tor_DirPort is defined or item is defined and item.tor_DirPort is defined %}
+DirPort {{ item.tor_DirPort | default(tor_DirPort) }}
 {% endif %}
-{% if tor_DirListenAddress is defined %}
-DirListenAddress {{ tor_DirListenAddress }}
+{% if tor_DirListenAddress is defined or item is defined and item.tor_DirListenAddress is defined %}
+DirListenAddress {{ item.tor_DirListenAddress | default(tor_DirListenAddress) }}
 {% endif %}
 ## )))
 
 ## Hidden Service options (((
-{% if tor_hidden_services is defined and tor_hidden_services is iterable %}
-{%   for service in tor_hidden_services %}
+{% macro write_hidden_services(hidden_services) %}
+{%   for service in hidden_services %}
 HiddenServiceDir {{ tor_hidden_services_parent_dir }}/{{ service.dir }}
 {%     for hidden_port in service.ports %}
 HiddenServicePort {{ hidden_port.virtport }} {{ hidden_port.target }}
@@ -247,7 +261,13 @@ HiddenServicePort {{ hidden_port.virtport }} {{ hidden_port.target }}
 {%     if "HiddenServiceAuthorizeClients" in service %}
 HiddenServiceAuthorizeClient stealth {{ service.HiddenServiceAuthorizeClients | join(',') }}
 {%     endif %}
+
 {%   endfor %}
+{% endmacro %}
+{% if tor_hidden_services is defined %}
+{{ write_hidden_services(tor_hidden_services) }}
+{% elif tor_instances is defined and item is defined and item.tor_hidden_services is defined %}
+{{ write_hidden_services(item.tor_hidden_services) }}
 {% endif %}
 ## )))
 
