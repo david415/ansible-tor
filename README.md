@@ -34,6 +34,31 @@ FIXME: Also refer to Travis build.
 
 ## Example configurations
 
+### Tor bridge using obfsproxy for obfs3 pluggable transport
+
+This example also shows how to configure your firewall using the [`debops.ferm`][debops.ferm] role.
+
+```YAML
+tor_MyFamily:
+# Listing a family for a bridge relay is not supported: it can reveal bridge fingerprints to censors. You should also make sure you aren't listing     this bridge's fingerprint in any other MyFamily.
+
+tor_BridgeRelay: 1
+tor_PublishServerDescriptor: 'bridge'
+tor_ExtORPort: 'auto'
+tor_ORPort: 22
+tor_obfs3_tcp_port: '80'
+tor_ServerTransportPlugin: 'obfs3 exec /usr/bin/obfsproxy managed'
+tor_ServerTransportListenAddr: 'obfs3 0.0.0.0:{{ tor_obfs3_tcp_port }}'
+
+ferm_input_host_list:
+  - type: 'dport_accept'
+    protocol: [ 'tcp' ]
+    dport: [ '{{ tor_ORPort }}', '{{ tor_obfs3_tcp_port }}' ]
+    accept_any: True
+    filename: 'tor_relay'
+    weight: '60'
+```
+
 ### Tor bridge using obfs4 pluggable transport
 
 ```YAML

@@ -21,7 +21,7 @@
   with_items:
   - 'obfsproxy'
   when: (ansible_pkg_mgr == 'apt' and
-         not tor_obfsproxy_install_via == 'package_manager')
+         tor_obfsproxy_install_via == 'package_manager')
 
 - include: install_obfsproxy_via_pip.yml
   when: tor_obfsproxy_install_via in ['pip', 'pip+virtualenv']

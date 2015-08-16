@@ -7,21 +7,8 @@ Pin-Priority: 900
 {% endif %}
 
 Explanation: Ensure that packages are upgraded/installed from deb.torproject.org.
-Package: *
+Package: * obfsproxy tor
 Pin: origin "deb.torproject.org"
-Pin-Priority: {{ tor_apt_preferences_priority }}
-
-{#
-Could be better managed by https://github.com/debops/ansible-apt_preferences like this:
-apt_preferences_list:
-  - package: 'obfsproxy'
-    backports: [ 'wheezy' ]
-    reason:  '0.1.x is the latest in wheezy. Backports provides 0.2.x.'
-#}
-
-Explanation: 0.1.x is the latest in wheezy. Backports provides 0.2.x.
-Package: obfsproxy
-Pin: release o=Debian Backports,n=wheezy-backports
 Pin-Priority: {{ tor_apt_preferences_priority }}
 
 Package: obfs4proxy

@@ -45,6 +45,4 @@
   apt:
     pkg: '{{ item }}'
     state: latest
-  with_items:
-    - 'deb.torproject.org-keyring'
-    - 'tor'
+  with_items: tor_apt_base_packages

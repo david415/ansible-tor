@@ -78,7 +78,10 @@ tor_obfs4proxy_install_from: 'testing'
 ## Debian mirror to use.
 debian_repo: 'http://httpredir.debian.org/debian/'
 
-
+tor_apt_base_packages:
+  - 'deb.torproject.org-keyring'
+  - 'tor'
+  - 'tor-geoipdb'
 
 tor_obfsproxy_git_url: 'obfsproxy'
 tor_obfsproxy_virtenv: 'virtenv_obfsproxy'
