@@ -24,8 +24,6 @@ inventory file. I could have many other host groups defined in the
 inventory as well such as: tor-exit-relays, tor-bridges,
 tor-bananaphone-bridges, tor-hidden-tahoe-storage-nodes etc.
 
-For example configurations, checkout the inventory variables under [examples_host_vars/][].
-
 ## Requirements
 
 Works on Debian and Ubuntu.
@@ -135,11 +133,15 @@ tor_wait_for_hidden_services: yes
   vars:
     tor_ExitRelay: no
     tor_ExitPolicy: 'reject *:*'
+    tor_ContactInfo: {CHANGEME}
+    tor_MyFamily:
+      - fingerprint_relay1
+      - fingerprint_relay2
+      - fingerprint_relay3
 
   roles:
-    - { role: david415.ansible-tor,
-        sudo: yes
-      }
+    - role: david415.ansible-tor
+      sudo: yes
 ```
 
 A simple playbook like this can be used to deploy many instances of
@@ -176,13 +178,36 @@ reasonable defaults for these torrc options: User, PidFile, Log and DataDirector
 This Ansible role can also be used to create the tor configuration for a Tor instance which will be running in a Docker container. See the following example:
 
 ```YAML
+tor_instance_parent_dir: '/etc/tor'
+tor_DataDirectory_instances: '/var/lib/tor'
+
 tor_do_not_install_anything: yes
-tor_User_configure: False
+tor_User: 'root'
+tor_file_owner: 'root'
 tor_PidFile_configure: False
 tor_RunAsDaemon_configure: False
 tor_Log_instances: True
 tor_Log: 'notice stdout'
-tor_ORPort: 993
+
+tor_instances:
+  - name: 'relay'
+    tor_Nickname: 'myrelay'
+    tor_ORPort: 23
+    tor_DirPort: 8080
+  - name: 'hidden_services'
+    tor_ContactInfo: no
+    tor_MyFamily: no
+    tor_hidden_services:
+      - dir: 'web'
+        ports:
+        - virtport: '80'
+          target: '80'
+        - virtport: '443'
+          target: '443'
+      - dir: 'admin'
+        ports:
+        - virtport: '22'
+          target: '22'
 ```
 
 This Docker Image has been successfully tested with this configuration:
@@ -218,7 +243,7 @@ Additionally, there are a few roles which can help you in that regard:
 
   Can provide accurate time information over a secure (side) channel.
 
-* [`david415.openssh-hardened`][david415.openssh-hardened] or [`hardening.ssh-hardening`][hardening.ssh-hardening] or [`debops.sshd`][debops.sshd]
+* [`debops.sshd`][debops.sshd] or [`david415.openssh-hardened`][david415.openssh-hardened] or [`hardening.ssh-hardening`][hardening.ssh-hardening]
 
   Furthermore it is also a good idea to have a hardened openssh-server
   setup that supports the new ed25515 key exchange and

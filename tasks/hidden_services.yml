@@ -4,14 +4,14 @@
   file:
     path: '{{ tor_hidden_services_parent_dir }}'
     state: 'directory'
-    owner: '{{ tor_User | default(omit) }}'
-    group: '{{ tor_User | default(omit) }}'
+    owner: '{{ tor_file_owner | default(omit) }}'
+    group: '{{ tor_file_group | default(omit) }}'
     mode: 0750
 
 - name: Create tor hidden services directories
   file:
     path: '{{ tor_hidden_services_parent_dir }}/{{ item.dir }}'
     state: 'directory'
-    owner: '{{ tor_User | default(omit) }}'
-    group: '{{ tor_User | default(omit) }}'
+    owner: '{{ tor_file_owner | default(omit) }}'
+    group: '{{ tor_file_group | default(omit) }}'
   with_items: tor_hidden_services

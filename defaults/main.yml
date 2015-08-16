@@ -1,12 +1,15 @@
 ---
 
 tor_User: 'debian-tor'
+tor_file_owner: '{{ tor_User }}'
+tor_file_group: '{{ tor_file_owner }}'
 
-## If the user should be written into the torrc file using the User option.
-tor_User_configure: True
 ## If the PID file path should be written into the torrc file using the PidFile option.
 tor_PidFile_configure: True
 tor_RunAsDaemon_configure: True
+
+## If defined, use this directory for all instances.
+# tor_DataDirectory_instances: '/var/lib/tor'
 
 tor_DataDirectory: '/var/lib/tor'
 tor_PidFile: '/var/run/tor/tor.pid'
@@ -15,10 +18,6 @@ tor_RunAsDaemon: 1
 ## If True, also write this configuration option in multiple instance mode.
 tor_Log_instances: False
 tor_Log: 'notice file /var/log/tor/log'
-
-## If True, configure the DataDirectory in multiple instance mode.
-## If False, do not configure it (Tor will use the compiled in default, usually /var/lib/tor).
-tor_DataDirectory_instances: True
 
 tor_instance_parent_dir: '/etc/tor/instances'
 tor_hidden_services_parent_dir: '/var/lib/tor/services'

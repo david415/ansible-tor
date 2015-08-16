@@ -4,10 +4,8 @@
 {% if tor_RunAsDaemon_configure %}
 RunAsDaemon 1
 {% endif %}
-{% if tor_user_configure %}
-{%   if tor_User is defined or item is defined and item.tor_User is defined %}
+{% if tor_User is defined or item is defined and item.tor_User is defined %}
 User {{ item.tor_User | default(tor_User) }}
-{%   endif %}
 {% endif %}
 {% if tor_PidFile_configure %}
 PidFile {{ tor_instance_parent_dir }}/{{ item.name }}/tor.pid
@@ -17,7 +15,9 @@ Log {{ tor_Log }}
 {% else %}
 Log warn file {{ tor_instance_parent_dir }}/{{ item.name }}/log
 {% endif %}
-{%   if tor_DataDirectory_instances %}
+{%   if tor_DataDirectory_instances is defined %}
+DataDirectory {{ tor_DataDirectory_instances }}
+{% else %}
 DataDirectory {{ tor_instance_parent_dir }}/{{ item.name }}/data
 {%   endif %}
 {% else %}
@@ -145,7 +145,7 @@ HTTPSProxyAuthenticator {{ item.tor_HTTPSProxyAuthenticator | default(tor_HTTPSP
 ProtocolWarnings {{ item.tor_ProtocolWarnings | default(tor_ProtocolWarnings) }}
 {% endif %}
 {% if tor_HardwareAccel is defined or item is defined and item.tor_HardwareAccel is defined %}
-HardwareAccel {{ item.tor_HardwareAccel | default(tor_HardwareAccel) }}
+HardwareAccel {{ '1' if (item.tor_HardwareAccel | default(tor_HardwareAccel)) else '0' }}
 {% endif %}
 {% if tor_AccelName is defined or item is defined and item.tor_AccelName is defined %}
 AccelName {{ item.tor_AccelName | default(tor_AccelName) }}
