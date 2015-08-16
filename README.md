@@ -177,7 +177,7 @@ This Ansible role can also be used to create the tor configuration for a Tor ins
 
 ```YAML
 tor_do_not_install_anything: yes
-tor_user_configure: False
+tor_User_configure: False
 tor_PidFile_configure: False
 tor_RunAsDaemon_configure: False
 tor_Log_instances: True

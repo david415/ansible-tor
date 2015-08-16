@@ -1,9 +1,9 @@
 ---
 
-tor_user: 'debian-tor'
+tor_User: 'debian-tor'
 
 ## If the user should be written into the torrc file using the User option.
-tor_user_configure: True
+tor_User_configure: True
 ## If the PID file path should be written into the torrc file using the PidFile option.
 tor_PidFile_configure: True
 tor_RunAsDaemon_configure: True

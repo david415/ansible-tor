@@ -4,34 +4,34 @@
   file:
     path: '{{ tor_instance_parent_dir }}'
     state: 'directory'
-    owner: '{{ tor_user | default(omit) }}'
+    owner: '{{ tor_User | default(omit) }}'
 
 - name: Ensure tor instances data dir exist
   file:
     path: '{{ tor_instance_parent_dir }}/{{ item.name }}/data'
     state: 'directory'
-    owner: '{{ tor_user | default(omit) }}'
+    owner: '{{ tor_User | default(omit) }}'
   with_items: tor_instances
 
 - name: Ensure tor instances log file exist
   file:
     path: '{{ tor_instance_parent_dir }}/{{ item.name }}/log'
     state: 'touch'
-    owner: '{{ tor_user | default(omit) }}'
+    owner: '{{ tor_User | default(omit) }}'
   with_items: tor_instances
 
 - name: Ensure tor instances pid file exist
   file:
     path: '{{ tor_instance_parent_dir }}/{{ item.name }}/tor.pid'
     state: 'touch'
-    owner: '{{ tor_user | default(omit) }}'
+    owner: '{{ tor_User | default(omit) }}'
   with_items: tor_instances
 
 - name: Ensure instances template torrc
   template:
     src: 'torrc.j2'
     dest: '{{ tor_instance_parent_dir }}/{{ item.name }}/torrc'
-    owner: '{{ tor_user | default(omit) }}'
+    owner: '{{ tor_User | default(omit) }}'
     mode: 0644
   with_items: tor_instances
   register: instances_status

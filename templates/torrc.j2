@@ -4,7 +4,7 @@
 {% if tor_RunAsDaemon_configure %}
 RunAsDaemon 1
 {% endif %}
-{% if tor_user_configure %}
+{% if tor_User_configure %}
 {%   if tor_User is defined or item is defined and item.tor_User is defined %}
 User {{ item.tor_User | default(tor_User) }}
 {%   endif %}
