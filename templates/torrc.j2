@@ -411,5 +411,13 @@ HiddenServiceAuthorizeClient stealth {{ service.HiddenServiceAuthorizeClients | 
 {% endif %}
 ## )))
 
+## Custom configuration (((
+{% if item is defined and item.tor_custom_configuration is defined %}
+custom_configuration {{ item.tor_custom_configuration }}
+{% elif tor_custom_configuration is defined %}
+custom_configuration {{ tor_custom_configuration}}
+{% endif %}
+## )))
+
 # end of torrc
 # vim: set foldmarker=(((,))):

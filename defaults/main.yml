@@ -19,6 +19,9 @@ tor_RunAsDaemon: 1
 tor_Log_instances: False
 tor_Log: 'notice file /var/log/tor/log'
 
+#tor_custom_configuration: |
+#  # More specific torrc configuration can go here (YAML block).
+
 tor_instance_parent_dir: '/etc/tor/instances'
 tor_hidden_services_parent_dir: '/var/lib/tor/services'
 
