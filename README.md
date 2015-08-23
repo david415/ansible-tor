@@ -1,6 +1,10 @@
 Ansible Tor
 ===========
 
+I'm not maintaining this project anymore... so you should instead use Nusenu's good work here:
+https://github.com/nusenu/ansible-relayor
+
+
 This is an Ansible role for use with Tor - https://www.torproject.org/
 
 I hope that relay operators will find this useful for deploying
