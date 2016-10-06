@@ -1,38 +1,48 @@
 ---
 
-- name: install requirements for ansible apt module
-  apt: pkg="{{ item }}" state=latest
+- name: Ensure requirements for ansible apt module are installed
+  apt:
+    pkg: '{{ item }}'
+    state: latest
   with_items:
     - python-apt
     - python-pycurl
 
+- name: Ensure APT pinning is configured
+  template:
+    src: 'preferences.j2'
+    dest: '/etc/apt/{{ "preferences" if tor_manage_apt_preferences else "preferences.d/david415.tor.pref" }}'
+    owner: root
+    group: root
+    mode: 0644
 
-- name: install tor project apt signing gpg key
-  apt_key: >
-    state=present
-    data="{{ lookup('file', 'tor-signing-key.pub') }}"
+- name: Install Tor project apt signing GPG key
+  apt_key:
+    data: '{{ lookup("file", "tor-signing-key.pub") }}'
+    state: present
 
-- name: setup tor apt repo
-  apt_repository: >
-    repo='deb http://deb.torproject.org/torproject.org {{ tor_distribution_release }} main'
-    state=present 
-    update_cache=yes
+- name: Setup tor apt repository
+  apt_repository:
+    repo: 'deb http://deb.torproject.org/torproject.org {{ tor_distribution_release }} main'
+    state: present
+    update_cache: yes
 
 ## in case {{ tor_distribution_release }} is a development branch (ie. the name starts with tor-experimental), the line with the distribution name is also needed to install deb.torproject.org-keyring
-- name: get distribution name from tor_distribution_release variable
+## FIXME: Jinja2 filters can be used for this.
+- name: Get distribution name from tor_distribution_release variable
   shell: python -c "print '{{ tor_distribution_release }}'.split('-')[-1]"
   register: distribution
   when: tor_distribution_release.startswith('tor-experimental')
 
-- name: setup tor apt repo in case tor_distribution_release is a development branch
-  apt_repository: >
-    repo='deb http://deb.torproject.org/torproject.org {{ distribution.stdout }} main'
-    state=present 
-    update_cache=yes
+- name: Setup tor apt repo in case tor_distribution_release is a development branch
+  apt_repository:
+    repo: 'deb http://deb.torproject.org/torproject.org {{ distribution.stdout }} main'
+    state: present
+    update_cache: yes
   when: tor_distribution_release.startswith('tor-experimental')
 
-- name: install tor and tor keyring packages
+- name: Ensure tor and tor keyring packages are installed
   apt:
-    pkg: "{{ item }}"
+    pkg: '{{ item }}'
     state: latest
-  with_items: ["deb.torproject.org-keyring", "tor"]
+  with_items: tor_apt_base_packages

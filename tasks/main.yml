@@ -2,30 +2,34 @@
 
 ## install
 - include: install_tor_apt.yml
-  when: ansible_pkg_mgr == 'apt'
+  when: ansible_pkg_mgr == 'apt' and not tor_do_not_install_anything
 
 - include: install_tor_yum.yml
-  when: ansible_pkg_mgr == 'yum'
+  when: ansible_pkg_mgr == 'yum' and not tor_do_not_install_anything
 
-- include: configure_obfs4proxy.yml
-  when: tor_obfs4proxy_enabled
+- include: install_obfsproxy.yml
+  when: tor_obfsproxy_enable and not tor_do_not_install_anything
 
-- include: install_pip_obfsproxy.yml
-  sudo: no
-  when: tor_obfsproxy_home is defined
+- include: install_obfs4proxy.yml
+  when: tor_obfs4proxy_enable and not tor_do_not_install_anything
 
 
 ## configure
-
 - include: hidden_services.yml
   when: tor_hidden_services is defined
 
-- include: configure_apt_single.yml
-  when: proc_instances is not defined
+- include: configure_single_tor_instance.yml
+  when: tor_instances is not defined
 
-- include: configure_tor_instance.yml
-  when: proc_instances is defined
+- include: configure_multiple_tor_instances.yml
+  when: tor_instances is defined and tor_instances is iterable
+
 
 ## wait for hidden services
 - include: wait_for_hidden_services.yml
   when: tor_wait_for_hidden_services
+
+- name: Your Tor fingerprint. You might want to it it to the MyFamily configuration option.
+  debug:
+    var: tor_instance_fingerprint.stdout
+  when: tor_instance_fingerprint is defined and tor_instance_fingerprint.rc == 0

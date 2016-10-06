@@ -1,0 +1,16 @@
+# {{ ansible_managed }}
+
+{% if tor_manage_apt_preferences %}
+Package: *
+Pin: release n={{ ansible_distribution_release }}
+Pin-Priority: 900
+{% endif %}
+
+Explanation: Ensure that packages are upgraded/installed from deb.torproject.org.
+Package: * obfsproxy tor
+Pin: origin "deb.torproject.org"
+Pin-Priority: {{ tor_apt_preferences_priority }}
+
+Package: obfs4proxy
+Pin: release n={{ tor_obfs4proxy_install_from }}
+Pin-Priority: {{ tor_apt_preferences_priority }}

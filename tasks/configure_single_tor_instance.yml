@@ -1,0 +1,25 @@
+---
+
+- name: Write tor configuration
+  template:
+    src: 'torrc.j2'
+    dest: '/etc/tor/torrc'
+    owner: 'root'
+    group: 'root'
+    mode: 0644
+  notify:
+  - restart tor
+
+- meta: flush_handlers
+
+- name: Ensure tor is running
+  service:
+    name: 'tor'
+    state: 'running'
+
+- name: Get Tor fingerprint
+  command: 'cut --fields=2 --delimiter=" " {{ tor_DataDirectory }}/fingerprint'
+  register: tor_instance_fingerprint
+  when: tor_DataDirectory is string
+  failed_when: False
+  changed_when: False

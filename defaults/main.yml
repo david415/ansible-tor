@@ -1,22 +1,97 @@
 ---
 
-tor_instance_parent_dir: /etc/tor/instances
-tor_user: debian-tor
-tor_DataDirectory: /var/lib/tor
-tor_PidFile: /var/run/tor/tor.pid
+tor_User: 'debian-tor'
+tor_file_owner: '{{ tor_User }}'
+tor_file_group: '{{ tor_file_owner }}'
+
+## If the PID file path should be written into the torrc file using the PidFile option.
+tor_PidFile_configure: True
+tor_RunAsDaemon_configure: True
+
+## If defined, use this directory for all instances.
+# tor_DataDirectory_instances: '/var/lib/tor'
+
+tor_DataDirectory: '/var/lib/tor'
+tor_PidFile: '/var/run/tor/tor.pid'
 tor_RunAsDaemon: 1
-tor_Log: "notice file /var/log/tor/log"
-tor_hidden_services_parent_dir: /var/lib/tor/services
+
+## If True, also write this configuration option in multiple instance mode.
+tor_Log_instances: False
+tor_Log: 'notice file /var/log/tor/log'
+
+#tor_custom_configuration: |
+#  # More specific torrc configuration can go here (YAML block).
+
+tor_instance_parent_dir: '/etc/tor/instances'
+tor_hidden_services_parent_dir: '/var/lib/tor/services'
+
+## Only generate the configuration without installing anything.
+## Might be useful when you run tor instances in Containers, for example Docker
+## https://github.com/patrickod/docker-tor
+tor_do_not_install_anything: False
+
+## Can be set to yes if you would like this role to wait for the newly created
+## tor hidden services to start. It does so by waiting for the tor hidden
+## service hostname file to appear.
 tor_wait_for_hidden_services: no
 
-tor_obfs4proxy_enabled: False
-tor_obfs4proxy_release: sid
-debian_repo: http://ftp.us.debian.org/debian/
+## Should be set to the desired distribution of
+## the Tor Project's APT repository.
+## See https://deb.torproject.org/torproject.org/dists/
+## The default (the release name of your distribution) should be fine in most cases.
+tor_distribution_release: '{{ ansible_distribution_release }}'
 
-tor_obfsproxy_git_url: obfsproxy
-tor_obfsproxy_virtenv: virtenv_obfsproxy
+## If true, use apt preferences to ensure that even if other releases e.g.
+## testing of sid are enabled only certain packages are installed from testing or sid.
+## If false, you have to configure that yourself or by using another role like
+## https://github.com/debops/ansible-apt_preferences
+tor_manage_apt_preferences: True
+
+tor_apt_preferences_priority: 910
+
+
+## obfsproxy -------------------------------------
+## Install and enable obfsproxy (written in Python).
+tor_obfsproxy_enable: True
+
+## True: Install virtualenv from source/manually.
+## False (default): Install virtualenv via the means of your distribution.
+tor_install_python_virtualenv_manually: False
+
+## How to install obfsproxy, options:
+## - package_manager: By the means of your distribution.
+## - pip: Install via pip.
+## - pip+virtualenv: Install via pip in virtualenv.
+tor_obfsproxy_install_via: 'package_manager'
+
+## Variable should be set when you choice `tor_obfsproxy_install_via` == 'pip+virtualenv'
+## to specify where to create the virtualenv.
+tor_obfsproxy_home: '/var/lib/tor/pluggable_transports_obfsproxy'
+
+
+## obfs4proxy -------------------------------------
+## Install and enable obfs4proxy (written in Go).
+tor_obfs4proxy_enable: True
+
+## https://packages.debian.org/search?keywords=obfs4proxy
+## Use Codenames like jessie, testing, sid or trusty.
+tor_obfs4proxy_install_from: 'testing'
+
+
+## Debian mirror to use.
+debian_repo: 'http://httpredir.debian.org/debian/'
+
+tor_apt_base_packages:
+  - 'deb.torproject.org-keyring'
+  - 'tor'
+  - 'tor-geoipdb'
+
+tor_obfsproxy_git_url: 'obfsproxy'
+tor_obfsproxy_virtenv: 'virtenv_obfsproxy'
 
 # keep these up to date!
-tor_obfsproxy_virtenv_version: virtualenv-1.11.4
-tor_virtenv_tarball_url: https://pypi.python.org/packages/source/v/virtualenv/virtualenv-1.11.4.tar.gz
-tor_virtenv_tarball: virtualenv-1.11.4.tar.gz
+# https://pypi.python.org/pypi/virtualenv
+# https://github.com/pypa/virtualenv/releases
+tor_obfsproxy_virtenv_version: 'virtualenv-13.1.0'
+tor_virtenv_tarball: '{{ tor_obfsproxy_virtenv_version }}.tar.gz'
+tor_virtenv_tarball_url: 'https://pypi.python.org/packages/source/v/virtualenv/{{ tor_obfsproxy_virtenv_version }}.tar.gz'

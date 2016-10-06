@@ -1,5 +1,4 @@
-Ansible Tor
-===========
+# Ansible Tor
 
 I'm not maintaining this project anymore... so you should instead use Nusenu's good work here:
 https://github.com/nusenu/ansible-relayor
@@ -18,325 +17,291 @@ without obfsproxy.
 Here I assume the user has setup their ansible project directory according to the best practices
 directory-layout specified here:
 
-http://docs.ansible.com/playbooks_best_practices.html#directory-layout
+https://docs.ansible.com/playbooks_best_practices.html#directory-layout
 
-...and simply run a command like this: ansible-playbook -i production tor-relays.yml
+...and simply run a command like this: `ansible-playbook -i production tor-relays.yml`
 
-In this case I'm running the tor-relays.yml playbook against
+In this case I'm running the `tor-relays.yml` playbook against
 the "production" inventory file. This tor-relays playbook might
 specify a host group called tor-relays... which is defined in the
 inventory file. I could have many other host groups defined in the
 inventory as well such as: tor-exit-relays, tor-bridges,
 tor-bananaphone-bridges, tor-hidden-tahoe-storage-nodes etc.
 
-
-
-Requirements
-------------
+## Requirements
 
 Works on Debian and Ubuntu.
 I've tried it... so I know. =-)
 
-
-Role Variables
---------------
-
-tor_distribution_release should be set to the desired distribution of
-the Tor Project's APT repo - http://deb.torproject.org/torproject.org
-
-Perhaps many debian users will want to specify "wheezy"... however if
-you intend to operate a tor bridge then you unless you probably want
-"tor-experimental-0.2.5.x-wheezy" so that you can have
-ServerTransportOptions in your torrc.
-
-tor_obfsproxy_home variable should set when you want to use obfsproxy
-with your bridge configuration. Perhaps I should change this to be a
-boolean variable names tor_run_obfsproxy... and then set a reasonable
-default for the obfsproxy python virtual env directory?
-
-tor_wait_for_hidden_services can be set to yes if you would like the
-ansible-tor role to wait for the newly created tor hidden services to
-start. It does so by waiting for the tor hidden service hostname file
-to appear.
+FIXME: Also refer to Travis build.
 
 
-Example Tor obfs4 Bridge Playbook
----------------------------------
+## Example configurations
 
-```yml
----
-- hosts: tor-relays
-  user: human
-  connection: ssh
-  roles:
-# XXX uber-paranoid openssh ansible role?
-#    - { role: ansible-openssh-hardened,
-#        backports_url: "http://ftp.de.debian.org/debian/",
-#        backports_distribution_release: "wheezy-backports",
-#        ssh_admin_ed25519pubkey_path: "/home/amnesia/.ssh/id_ed25519.pub",
-#        sudo: yes
-#      }
-#    - { role: ansible-tlsdate,
-#        remove_ntp: yes,
-#        sudo: yes
-#      }
-    - { role: ansible-tor,
-        tor_distribution_release: "tor-experimental-0.2.5.x-wheezy",
-        tor_BridgeRelay: 1,
-        tor_PublishServerDescriptor: "bridge",
-        tor_ExtORPort: "auto",
-        tor_ORPort: 9001,
-        tor_ServerTransportPlugin: "obfs4 exec /usr/bin/obfs4proxy",
-        tor_ExitPolicy: "reject *:*",
-        tor_obfs4proxy_enabled: True,
-        sudo: yes
-      }
+### Tor bridge using obfsproxy for obfs3 pluggable transport
+
+This example also shows how to configure your firewall using the [`debops.ferm`][debops.ferm] role.
+
+```YAML
+tor_MyFamily:
+# Listing a family for a bridge relay is not supported: it can reveal bridge fingerprints to censors. You should also make sure you aren't listing     this bridge's fingerprint in any other MyFamily.
+
+tor_BridgeRelay: 1
+tor_PublishServerDescriptor: 'bridge'
+tor_ExtORPort: 'auto'
+tor_ORPort: 22
+tor_obfs3_tcp_port: '80'
+tor_ServerTransportPlugin: 'obfs3 exec /usr/bin/obfsproxy managed'
+tor_ServerTransportListenAddr: 'obfs3 0.0.0.0:{{ tor_obfs3_tcp_port }}'
+
+ferm_input_host_list:
+  - type: 'dport_accept'
+    protocol: [ 'tcp' ]
+    dport: [ '{{ tor_ORPort }}', '{{ tor_obfs3_tcp_port }}' ]
+    accept_any: True
+    filename: 'tor_relay'
+    weight: '60'
 ```
 
+### Tor bridge using obfs4 pluggable transport
 
-Note that the `ansible-tlsdate` role is also not strictly necessary...
-however Tor does need accurate time and I think it is *much* better
-to use tldated instead of ntpd.
-See here:
-https://github.com/david415/ansible-tlsdate
-
-Furthermore it is also a good idea to have a hardened openssh-server
-configuration;  that supports the new ed25515 key exchange +
-the new polychacha1305 DJB-inspired crypto transport.
-See here:
-https://github.com/david415/ansible-openssh-hardened
-
-
-Example Tor Scramblesuit Bridge Playbook
-----------------------------------------
-
-This playbook installs and fully configures a scramblesuit
-( http://www.cs.kau.se/philwint/scramblesuit/ ) tor bridge using the latest
-obfsproxy available to pip (installs into a python virtualenv).
-
-```yml
----
-
-- hosts: tor-bridges
-  roles:
-    - { role: ansible-role-firewall,
-        firewall_allowed_tcp_ports: [ 22, 4703 ],
-        sudo: yes
-      }
-    - { role: david415.ansible-tor,
-        tor_distribution_release: "wheezy",
-        tor_BridgeRelay: 1,
-        tor_PublishServerDescriptor: "bridge",
-        tor_obfsproxy_home: "/home/ansible",
-        tor_ORPort: 9001,
-        tor_ServerTransportPlugin: "scramblesuit exec {{ tor_obfsproxy_home }}/{{ tor_obfsproxy_virtenv }}/bin/obfsproxy --log-min-severity=info --log-file=/var/log/tor/obfsproxy.log managed",
-        tor_ServerTransportListenAddr: "scramblesuit 0.0.0.0:4703",
-        tor_ExitPolicy: "reject *:*",
-        sudo: yes
-      }
+```YAML
+tor_BridgeRelay: 1
+tor_PublishServerDescriptor: "bridge"
+tor_ExtORPort: "auto"
+tor_ORPort: 9001
+tor_ServerTransportPlugin: "obfs4 exec /usr/bin/obfs4proxy"
+tor_ExitRelay: no
+tor_ExitPolicy: 'reject *:*'
+tor_SocksPort: 0
+tor_obfs4proxy_enabled: True
 ```
 
-You should also feel free to apply iptables rulesets...
-however this also is not strictly necessary but at times might be a good idea.
+### Tor bridge using obfsproxy together with scramblesuit
 
+Configures a scramblesuit tor bridge using the
+latest obfsproxy available to pip (installs into a python virtualenv).
 
-Example Tor Bananaphone Bridge Playbook
----------------------------------------
+http://www.cs.kau.se/philwint/scramblesuit/
 
-This playbook demonstrates configuring a tor bridge
-with an obfsproxy installed from my git repo so that
+```YAML
+tor_BridgeRelay: 1
+tor_PublishServerDescriptor: "bridge"
+tor_obfsproxy_home: "/home/ansible"
+tor_ORPort: 9001
+tor_ServerTransportPlugin: "scramblesuit exec {{ tor_obfsproxy_home }}/{{ tor_obfsproxy_virtenv }}/bin/obfsproxy --log-min-severity=info --log-file=/var/log/tor/obfsproxy.log managed"
+tor_ServerTransportListenAddr: "scramblesuit 0.0.0.0:4703"
+tor_ExitRelay: no
+tor_ExitPolicy: 'reject *:*'
+tor_SocksPort: 0
+```
+
+### Tor bridge using bananaphone pluggable transport
+
+Configures a tor bridge
+with an obfsproxy installed from my git repository so that
 the bananaphone pluggable transport is available (it has not been
 merged upstream).
 
 Bananaphone provides tor over markov chains!
 If you have sensitive or interesting documents then please consider
 operating a bananaphone bridge utilizing these text corpuses.
-Read about the bananaphone pluggable transport for tor - http://bananaphone.io/
+Read about the bananaphone pluggable transport for tor.
+https://bananaphone.readthedocs.org/
 
-
-```yml
----
-
-- hosts: tor-bridges
-  roles:
-    - { role: david415.ansible-tor,
-        tor_distribution_release: "tor-experimental-0.2.5.x-wheezy",
-        tor_BridgeRelay: 1,
-        tor_PublishServerDescriptor: "bridge",
-        tor_obfsproxy_home: "/home/ansible",
-        tor_ORPort: 9001,
-        tor_obfsproxy_git_url: "git+https://github.com/david415/obfsproxy.git",
-        tor_ServerTransportPlugin: "bananaphone exec {{ tor_obfsproxy_home }}/{{ tor_obfsproxy_virtenv }}/bin/obfsproxy --log-min-severity=info --log-file=/var/log/tor/obfsproxy.log managed",
-        tor_ServerTransportOptions: "bananaphone corpus=/usr/share/dict/words encodingSpec=words,sha1,4 modelName=markov order=1",
-        tor_ServerTransportListenAddr: "bananaphone 0.0.0.0:4703",
-        tor_ExitPolicy: "reject *:*",
-        sudo: yes
-      }
+```YAML
+tor_BridgeRelay: 1
+tor_PublishServerDescriptor: "bridge"
+tor_obfsproxy_home: "/home/ansible"
+tor_ORPort: 9001
+tor_obfsproxy_git_url: "git+https://github.com/david415/obfsproxy.git"
+tor_ServerTransportPlugin: "bananaphone exec {{ tor_obfsproxy_home }}/{{ tor_obfsproxy_virtenv }}/bin/obfsproxy --log-min-severity=info --log-file=/var/log/tor/obfsproxy.log managed"
+tor_ServerTransportOptions: "bananaphone corpus=/usr/share/dict/words encodingSpec=words,sha1,4 modelName=markov order=1"
+tor_ServerTransportListenAddr: "bananaphone 0.0.0.0:4703"
+tor_ExitRelay: no
+tor_ExitPolicy: 'reject *:*'
+tor_SocksPort: 0
 ```
 
+### Tor hidden service for SSH
 
-Example Tor Relay Playbook
---------------------------
-
-
-This example playbook sets up tor relays with hidden service for
-ssh...
-
-This playbook demonstrates waiting for the hidden services
-to be created... by awaiting the existence of the tor hidden service
+This demonstrates waiting for the hidden services
+to be created by awaiting the existence of the tor hidden service
 hostname files. This happens when the role variable
-"tor_wait_for_hidden_services" is set to yes.
+`tor_wait_for_hidden_services` is set to yes.
 
 This feature could be useful when configuring other services that
-depend on knowing the hidden service's onion address... such as
-my ansible-tahoe-lafs role:
-https://github.com/david415/ansible-tahoe-lafs
+depend on knowing the hidden service's onion address such as
+my [`david415.tahoe-lafs`][david415.tahoe-lafs] role:
 
 Read about Tahoe-LAFS here:
 https://tahoe-lafs.org/trac/tahoe-lafs
+
 Read about tor hidden services here:
 https://www.torproject.org/docs/tor-hidden-service.html.en
 
+```YAML
 
-```yml
----
-- hosts: tor-relays
-  user: ansible
-  connection: ssh
-  vars:
-    relay_hidden_services_parent_dir: "/var/lib/tor/services"
-    relay_hidden_services: [ { dir: "hidden_ssh",
-                               ports: [ { virtport: "22",
-                                 target: "localhost:22" } ] }
-    ]
-  roles:
-    - { role: ansible-role-firewall,
-        firewall_allowed_tcp_ports: [ 22, 9001 ],
-        sudo: yes
-      }
-    - { role: david415.ansible-tor,
-        tor_distribution_release: "wheezy",
-        tor_ExitPolicy: "reject *:*",
-        tor_hidden_services: "{{ relay_hidden_services }}",
-        tor_hidden_services_parent_dir: "{{ relay_hidden_services_parent_dir }}",
-        tor_wait_for_hidden_services: yes,
-        sudo: yes
-      }
+tor_ExitRelay: no
+tor_ExitPolicy: 'reject *:*'
+tor_SocksPort: 0
+tor_hidden_services:
+  - dir: 'hidden_ssh'
+    ports:
+      - virtport: '22'
+        target: 'localhost:22'
+tor_wait_for_hidden_services: yes
 ```
 
-
-Example Multi-tor-instance playbook
------------------------------------
+### Multi-tor-instance playbook
 
 
-polytorus-ansibilus.yml:
-```yml
+```YAML
 ---
 - hosts: tor-relays
+  vars:
+    tor_ExitRelay: no
+    tor_ExitPolicy: 'reject *:*'
+    tor_ContactInfo: {CHANGEME}
+    tor_MyFamily:
+      - fingerprint_relay1
+      - fingerprint_relay2
+      - fingerprint_relay3
+
   roles:
-    - { role: david415.ansible-tor,
-        tor_distribution_release: "wheezy",
-        tor_ExitPolicy: "reject *:*",
-        sudo: yes
-      }
+    - role: david415.ansible-tor
+      sudo: yes
 ```
 
 A simple playbook like this can be used to deploy many instances of
 tor on many servers. You can configure multiple tor instances using
 the host_vars file for each host.
 
-Here's what an example host_vars file looks like (with rfc1918 ip addrs):
+Here's what an example host_vars file.
 
-host_vars/192.168.1.1:
-```yml
-tor_Nickname: [ "ScratchMaster" ]
-proc_instances: [ {
-name: "relay1",
-tor_ORPort: ["192.168.1.1:9002"],
-tor_SOCKSPort: ["8041"]
-},
-{
-name: "relay2",
-tor_ORPort: ["192.168.1.2:9002"],
-tor_SOCKSPort: ["8042"]
-},
-{
-name: "relay3",
-tor_ORPort: ["192.168.1.3:9002"],
-tor_SOCKSPort: ["8043"]
-}]
+host_vars/tor_relay1.example.com:
+```YAML
+tor_Nickname: "ScratchMaster"
+tor_instances:
+  - name: "relay1"
+    tor_ORPort: ["192.168.1.1:9002"]
+    tor_SocksPort: ["8041"]
+  - name: "relay2"
+    tor_ORPort: ["192.168.1.2:9002"]
+    tor_SocksPort: ["8042"]
+  - name: "relay3"
+    tor_ORPort: ["192.168.1.3:9002"]
+    tor_SocksPort: ["8043"]
 ```
 
 In the above example playbook, all the role variables get applied to
 all tor instances. If you want to control the role variables for a
 specific host then you must use that host's host_vars file.
 
-Note: when this role is used in "multi-tor process mode"... meaning
-that if the proc_instances variable is defined... then the torrc template will set
+Note: When this role is used in "multi-tor process mode" meaning
+that if the `tor_instances` variable is defined then the torrc template will set
 reasonable defaults for these torrc options: User, PidFile, Log and DataDirectory.
 
-This next example is NOT very practical because it can only be used
-with a host inventory with one host! If it were to be used with
-multiple hosts then their torrc files would contain the same IP addresses.
+### Running a Tor relay in a Docker container
 
-```yml
----
-- hosts: tor-relays
-  roles:
-    - { role: david415.ansible-tor,
-        tor_distribution_release: "wheezy",
-        tor_ExitPolicy: "reject *:*",
-        tor_instance_parent_dir: "/etc/tor/instances",
-        proc_instances: [ {
-                          name: "relay1",
-                          tor_ORPort: ["192.168.1.1:9002"],
-                          tor_SocksPort: ["8041"]
-                        },
-                        {
-                          name: "relay2",
-                          tor_ORPort: ["192.168.1.2:9002"],
-                          tor_SocksPort: ["8042"]
-                        },
-                        {
-                          name: "relay3",
-                          tor_ORPort: ["192.168.1.3:9002"],
-                          tor_SocksPort: ["8043"]
-                        }],
-        sudo: yes
-      }
+This Ansible role can also be used to create the tor configuration for a Tor instance which will be running in a Docker container. See the following example:
+
+```YAML
+tor_instance_parent_dir: '/etc/tor'
+tor_DataDirectory_instances: '/var/lib/tor'
+
+tor_do_not_install_anything: yes
+tor_User: 'root'
+tor_file_owner: 'root'
+tor_PidFile_configure: False
+tor_RunAsDaemon_configure: False
+tor_Log_instances: True
+tor_Log: 'notice stdout'
+
+tor_instances:
+  - name: 'relay'
+    tor_Nickname: 'myrelay'
+    tor_ORPort: 23
+    tor_DirPort: 8080
+  - name: 'hidden_services'
+    tor_ContactInfo: no
+    tor_MyFamily: no
+    tor_hidden_services:
+      - dir: 'web'
+        ports:
+        - virtport: '80'
+          target: '80'
+        - virtport: '443'
+          target: '443'
+      - dir: 'admin'
+        ports:
+        - virtport: '22'
+          target: '22'
 ```
 
+This Docker Image has been successfully tested with this configuration:
+https://github.com/patrickod/docker-tor
 
-Tor configuration - torrc
--------------------------
+## Tor configuration - torrc
 
 torrc may have options set from host_vars/group_vars and
 also set from role variables.
 
-The host_vars can set arbitrary torrc configuration options however
-the role variables currently support a small subset of the torrc
-options at the moment... it's a work in progress; refer to the
-templates/torrc for a more detailed overview.
+The host_vars can set arbitrary torrc configuration options.
+Refer to the templates/torrc.j2 for details.
 
-The host_vars variable names must begin with "tor_";
+The host_vars variable names must begin with "tor\_";
 Here's an example setting "Nickname":
 
-```yml
-tor_Nickname: [ "OnionRobot" ]
+```YAML
+tor_Nickname: "OnionRobot"
 ```
 
 The dictionary value is a list because in some cases you may want to
 specify multiple lines in the torrc that begin with the dictionary key.
 
+## Operational security
 
-License
--------
+When you run an Tor relay, please secure your server and administration system as good as possible.
+
+Be sure to read thought the wiki Artikel [how to Run a Secure Tor Server][].
+
+Additionally, there are a few roles which can help you in that regard:
+
+* [`david415.tlsdate`][david415.tlsdate]
+
+  Can provide accurate time information over a secure (side) channel.
+
+* [`debops.sshd`][debops.sshd] or [`david415.openssh-hardened`][david415.openssh-hardened] or [`hardening.ssh-hardening`][hardening.ssh-hardening]
+
+  Furthermore it is also a good idea to have a hardened openssh-server
+  setup that supports the new ed25515 key exchange and
+  the new polychacha1305 DJB-inspired crypto transport.
+
+* [`hardening.os-hardening`][hardening.os-hardening]
+
+* [`ypid.apparmor`][ypid.apparmor]
+
+* [`debops.ferm`][debops.ferm]
+
+## License
 
 MIT
 
 
-Feature requests and bug-reports welcome!
------------------------------------------
+## Feature requests and bug-reports welcome!
 
 https://github.com/david415/ansible-tor/issues
 
+
+[david415.tlsdate]: https://github.com/david415/ansible-tlsdate
+[david415.openssh-hardened]: https://github.com/david415/ansible-openssh-hardened
+[hardening.ssh-hardening]: https://github.com/hardening-io/ansible-ssh-hardening
+[debops.sshd]: https://github.com/debops/ansible-sshd
+[hardening.os-hardening]: https://github.com/hardening-io/ansible-os-hardening
+[ypid.apparmor]: https://github.com/ypid/ansible-apparmor
+[debops.ferm]: https://github.com/debops/ansible-ferm
+[david415.tahoe-lafs]: https://github.com/david415/ansible-tahoe-lafs
+
+[How to Run a Secure Tor Server]: https://trac.torproject.org/projects/tor/wiki/doc/OperationalSecurity
+[examples_host_vars/]: https://github.com/david415/ansible-tor
